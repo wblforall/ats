@@ -51,10 +51,35 @@ class Career extends BaseController
             static fn (array $stage) => $stage['kind'] === 'open'
         ));
 
+        /* Dropdown filter hanya memuat pilihan yang benar-benar ada lowongan
+           dibukanya — tak perlu tampilkan unit/jenis yang kosong. Dihitung lewat
+           query independen (bukan model bersama yang sedang dipakai $jobs) atas
+           SEMUA lowongan tayang tanpa filter, agar pilihan tetap lengkap. */
+        $now = date('Y-m-d H:i:s');
+        $tayang = db_connect()->table('jobs')
+            ->select('unit_id, employment_type')
+            ->where('status', 'open')
+            ->where('deleted_at', null)
+            ->where('published_at IS NOT NULL')
+            ->where('published_at <=', $now)
+            ->groupStart()
+                ->where('closing_date IS NULL')
+                ->orWhere('closing_date >=', date('Y-m-d'))
+            ->groupEnd()
+            ->get()->getResultArray();
+        $unitAda  = array_unique(array_column($tayang, 'unit_id'));
+        $jenisAda = array_unique(array_column($tayang, 'employment_type'));
+
+        $units = array_values(array_filter(
+            model(UnitModel::class)->active(),
+            static fn (array $u) => in_array((int) $u['id'], array_map('intval', $unitAda), true)
+        ));
+
         return view('career/index', [
             'title'    => 'Karir',
             'jobs'     => $jobs->orderBy('jobs.published_at', 'DESC')->findAll(),
-            'units'    => model(UnitModel::class)->active(),
+            'units'    => $units,
+            'jenisAda' => $jenisAda,
             'flow'     => $flow,
             'filters'  => ['unit' => $unitId, 'tipe' => $type, 'q' => $q],
             'settings' => $settings->all(),

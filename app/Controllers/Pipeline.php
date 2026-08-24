@@ -42,7 +42,7 @@ class Pipeline extends BaseController
             'stages'  => $stages,
             'byStage' => $byStage,
             'total'   => count($rows),
-            'jobs'    => model(JobModel::class)->withStats($unitId)->orderBy('jobs.title', 'ASC')->findAll(),
+            'jobs'    => model(JobModel::class)->withStats($unitId)->where('(SELECT COUNT(*) FROM applications a WHERE a.job_id = jobs.id AND a.deleted_at IS NULL) > 0', null, false)->orderBy('jobs.title', 'ASC')->findAll(),
             'jobId'   => $jobId,
         ]);
     }

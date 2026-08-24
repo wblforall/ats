@@ -24,6 +24,11 @@
         <nav class="pub-nav">
             <a href="<?= site_url('karir') ?>">Lowongan</a>
             <a href="<?= site_url('lacak') ?>" class="solid">Lacak Lamaran</a>
+            <?php if (! session()->has('user_id')): ?>
+                <a href="<?= site_url('login') ?>" class="pub-login" title="Masuk untuk staf HRD"><?= icon('user') ?> Masuk</a>
+            <?php else: ?>
+                <a href="<?= site_url('dashboard') ?>" class="pub-login" title="Buka dashboard HRD"><?= icon('dashboard') ?> Dashboard</a>
+            <?php endif; ?>
         </nav>
     </div>
 

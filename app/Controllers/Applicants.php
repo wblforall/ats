@@ -53,7 +53,7 @@ class Applicants extends BaseController
             'active'   => 'apps',
             'rows'     => $apps->orderBy('applications.applied_at', 'DESC')->findAll(),
             'stages'   => model(StageModel::class)->active(),
-            'jobs'     => model(JobModel::class)->withStats($unitId)->orderBy('jobs.title', 'ASC')->findAll(),
+            'jobs'     => model(JobModel::class)->withStats($unitId)->where('(SELECT COUNT(*) FROM applications a WHERE a.job_id = jobs.id AND a.deleted_at IS NULL) > 0', null, false)->orderBy('jobs.title', 'ASC')->findAll(),
             'filters'  => ['stage' => $stageSlug, 'job' => $jobId, 'status' => $status, 'q' => $q],
         ]);
     }

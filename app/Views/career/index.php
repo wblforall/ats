@@ -9,41 +9,6 @@
 
 <?= $this->section('content') ?>
 
-<?php
-/* Penjelasan tiap tahap dipetakan dari slug. Tahap buatan HR yang belum
-   dikenali tetap tampil, hanya tanpa keterangan tambahan. */
-$flowNotes = [
-    'lamaran-masuk'  => 'Kirim data dan CV Anda lewat formulir. Nomor lamaran langsung dikirim ke email.',
-    'seleksi-berkas' => 'Tim HRD memeriksa kesesuaian berkas dengan kebutuhan posisi.',
-    'tes-asesmen'    => 'Uji kemampuan sesuai bidang, bisa daring maupun di kantor.',
-    'interview-hr'   => 'Wawancara awal bersama tim HRD.',
-    'interview-user' => 'Wawancara dengan calon atasan langsung Anda.',
-    'penawaran'      => 'Pembahasan gaji, tunjangan, dan tanggal mulai bekerja.',
-];
-?>
-
-<?php if ($flow !== []): ?>
-    <div class="pub-panel" style="margin-bottom: 26px;">
-        <h2 style="font-size:16px; margin:0 0 4px;">Alur Rekrutmen</h2>
-        <p style="color:var(--ink-soft); font-size:13.5px; margin:0 0 16px;">
-            Setiap tahap Anda lalui satu per satu. Statusnya bisa dipantau kapan saja lewat
-            <a href="<?= site_url('lacak') ?>">halaman pelacakan</a>.
-        </p>
-
-        <div class="flow">
-            <?php foreach ($flow as $i => $stage): ?>
-                <div class="flow-step">
-                    <div class="no"><?= $i + 1 ?></div>
-                    <b><?= esc($stage['name']) ?></b>
-                    <?php if (isset($flowNotes[$stage['slug']])): ?>
-                        <small><?= esc($flowNotes[$stage['slug']]) ?></small>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-<?php endif; ?>
-
 <div class="pub-panel">
     <form method="get" action="<?= site_url('karir') ?>" class="pub-filters">
         <div class="form-row">
@@ -69,7 +34,9 @@ $flowNotes = [
             <select id="tipe" name="tipe" class="form-control">
                 <option value="">Semua jenis</option>
                 <?php foreach (\App\Models\JobModel::EMPLOYMENT_TYPES as $key => $label): ?>
-                    <option value="<?= $key ?>" <?= $filters['tipe'] === $key ? 'selected' : '' ?>><?= $label ?></option>
+                    <?php if (in_array($key, $jenisAda, true)): ?>
+                        <option value="<?= $key ?>" <?= $filters['tipe'] === $key ? 'selected' : '' ?>><?= $label ?></option>
+                    <?php endif; ?>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -89,10 +56,16 @@ $flowNotes = [
 
 <?php if ($jobs === []): ?>
     <div class="pub-panel">
+        <?php $adaFilter = $filters['q'] !== '' || $filters['unit'] || $filters['tipe'] !== ''; ?>
         <div class="empty">
             <?= icon('briefcase') ?>
-            <div><b>Belum ada lowongan yang cocok.</b></div>
-            <div style="margin-top:4px;">Coba ubah kata kunci atau saringan, dan cek kembali lain waktu.</div>
+            <?php if ($adaFilter): ?>
+                <div><b>Tidak ada lowongan yang cocok.</b></div>
+                <div style="margin-top:4px;">Coba ubah kata kunci atau saringan.</div>
+            <?php else: ?>
+                <div><b>Belum ada lowongan yang dibuka.</b></div>
+                <div style="margin-top:4px;">Silakan cek kembali lain waktu.</div>
+            <?php endif; ?>
         </div>
     </div>
 <?php else: ?>

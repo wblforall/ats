@@ -111,7 +111,7 @@ a:hover { text-decoration: underline; }
     color: var(--blue-deep);
 }
 .topbar-brand:hover { text-decoration: none; }
-.topbar-brand img { display: block; height: 40px; width: auto; }
+.topbar-brand img { display: block; height: 52px; width: auto; }
 .topbar-brand .name { font-weight: 700; font-size: 17px; color: var(--blue); letter-spacing: -.2px; }
 /* Logo WBL bertinta navy + emas, jadi di atas latar biru ia harus berdiri di
    pelat putih agar tetap terbaca. */
@@ -522,7 +522,7 @@ textarea.form-control { min-height: 110px; resize: vertical; }
         border-radius: 0;
     }
     .topbar-brand .name { display: none; }
-    .topbar-brand img { height: 32px; }
+    .topbar-brand img { height: 42px; }
     body.nav-open .sidebar { transform: none; }
     body.nav-open::after {
         content: ""; position: fixed; inset: 0; background: rgba(15,35,70,.45); z-index: 50;
@@ -549,7 +549,7 @@ body.auth { display: grid; place-items: center; min-height: 100vh; padding: 24px
 }
 .auth-card .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 22px; }
 .auth-card .brand { flex-direction: column; align-items: flex-start; gap: 12px; }
-.auth-card .brand img { height: 70px; width: auto; display: block; }
+.auth-card .brand img { height: 92px; width: auto; display: block; }
 .auth-card h1 { font-size: 20px; margin: 0 0 4px; color: var(--blue); }
 .auth-card p.lead { color: var(--ink-soft); font-size: 13px; margin: 0 0 22px; }
 .auth-card .btn { width: 100%; justify-content: center; padding: 11px; }
@@ -574,7 +574,7 @@ body.public { background: #F6F8FC; }
 .pub-brand { display: flex; align-items: center; gap: 11px; color: #fff; }
 .pub-brand:hover { text-decoration: none; }
 .pub-brand .brand-plate { padding: 6px 9px; }
-.pub-brand .brand-plate img { width: auto; height: 42px; }
+.pub-brand .brand-plate img { width: auto; height: 56px; }
 .pub-brand b { display: block; font-size: 15px; line-height: 1.15; }
 .pub-brand small { display: block; font-size: 11px; opacity: .8; }
 .pub-nav { margin-left: auto; display: flex; align-items: center; gap: 8px; }
@@ -585,6 +585,16 @@ body.public { background: #F6F8FC; }
 .pub-nav a:hover { background: rgba(255,255,255,.15); text-decoration: none; }
 .pub-nav a.solid { background: #fff; color: var(--blue); font-weight: 600; }
 .pub-nav a.solid:hover { background: rgba(255,255,255,.9); }
+/* Tautan masuk HRD: subtil, dipisah garis, bukan untuk pelamar umum. */
+.pub-nav a.pub-login {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,.72); font-size: 12.5px; font-weight: 500;
+    border-left: 1px solid rgba(255,255,255,.28); border-radius: 0;
+    padding-left: 16px; margin-left: 4px;
+}
+.pub-nav a.pub-login:hover { background: transparent; color: #fff; text-decoration: none; }
+.pub-nav a.pub-login .ico { width: 15px; height: 15px; }
+@media (max-width: 600px) { .pub-nav a.pub-login span, .pub-nav a.pub-login { font-size: 0; } .pub-nav a.pub-login .ico { width: 18px; height: 18px; } }
 
 .pub-hero {
     background: var(--blue);
