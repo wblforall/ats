@@ -211,6 +211,45 @@
         }
     })();
 
+    /* Papan pipeline: afordance scroll untuk pengguna non-trackpad.
+       - Gradasi + tombol panah menandakan & menggerakkan scroll horizontal.
+       - Roda mouse (vertikal) diterjemahkan jadi geser horizontal saat di
+         atas papan, sehingga bisa digeser tanpa trackpad. */
+    document.querySelectorAll('.board-scroll').forEach(function (wrap) {
+        var board = wrap.querySelector('.board');
+        if (!board) return;
+
+        function refresh() {
+            var maxScroll = board.scrollWidth - board.clientWidth;
+            wrap.classList.toggle('can-left', board.scrollLeft > 4);
+            wrap.classList.toggle('can-right', board.scrollLeft < maxScroll - 4);
+            if (board.scrollLeft > 4) wrap.classList.add('scrolled');
+        }
+
+        function geser(arah) {
+            board.scrollBy({ left: arah * Math.max(260, board.clientWidth * 0.7), behavior: 'smooth' });
+        }
+
+        var prev = wrap.querySelector('.board-nav.prev');
+        var next = wrap.querySelector('.board-nav.next');
+        if (prev) prev.addEventListener('click', function () { geser(-1); });
+        if (next) next.addEventListener('click', function () { geser(1); });
+
+        board.addEventListener('scroll', refresh, { passive: true });
+        window.addEventListener('resize', refresh);
+
+        /* Roda mouse vertikal -> geser horizontal (hanya bila memang perlu). */
+        board.addEventListener('wheel', function (e) {
+            if (board.scrollWidth <= board.clientWidth) return;
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                board.scrollLeft += e.deltaY;
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        refresh();
+    });
+
     /* Konfirmasi untuk aksi yang tidak bisa dibatalkan. */
     document.querySelectorAll('[data-confirm]').forEach(function (el) {
         el.addEventListener('click', function (e) {

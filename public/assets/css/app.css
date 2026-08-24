@@ -764,8 +764,14 @@ body.public { background: #F6F8FC; }
     background: var(--blue-hover); color: var(--blue-deep);
     border-radius: var(--r-pill); font-size: 11px; padding: 1px 9px;
 }
-.board-body { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; }
-.board-empty { text-align: center; color: var(--ink-faint); font-size: 20px; padding: 14px 0; }
+.board-body { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; min-height: 90px; }
+/* Placeholder kolom kosong: tanda putus-putus halus, bukan garis "—" kriptik. */
+.board-empty {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    color: var(--ink-faint); font-size: 12px;
+    border: 1.5px dashed var(--line); border-radius: 10px;
+    min-height: 60px;
+}
 .board-card {
     display: block; background: #fff; border: 1px solid var(--line);
     border-radius: 11px; padding: 11px 12px; color: inherit;
@@ -840,3 +846,48 @@ tbody.drag-group { transition: background .12s ease; }
 tbody.drag-group[draggable="true"] { background: var(--blue-soft); }
 /* Baris tetap utuh saat tabel multi-tbody */
 table.data tbody.drag-group + tbody.drag-group .view-row td { border-top: 1px solid #F3F4F8; }
+
+
+/* --- Afordance scroll papan pipeline -------------------------------------- */
+.board-scroll { position: relative; }
+
+/* Gradasi memudar di tepi: penanda masih ada kolom lain. Muncul hanya bila
+   memang bisa di-scroll ke arah itu. */
+.board-scroll::before, .board-scroll::after {
+    content: ""; position: absolute; top: 42px; bottom: 10px; width: 46px;
+    pointer-events: none; z-index: 2; opacity: 0; transition: opacity .18s ease;
+}
+.board-scroll::before {
+    left: 0; background: linear-gradient(to right, rgba(246,248,252,.95), rgba(246,248,252,0));
+}
+.board-scroll::after {
+    right: 0; background: linear-gradient(to left, rgba(246,248,252,.95), rgba(246,248,252,0));
+}
+.board-scroll.can-left::before { opacity: 1; }
+.board-scroll.can-right::after { opacity: 1; }
+
+/* Tombol panah untuk pengguna mouse (bukan trackpad). */
+.board-nav {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow);
+    display: none; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--blue-deep);
+}
+.board-nav:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+.board-nav.prev { left: -6px; }
+.board-nav.next { right: -6px; }
+.board-nav .ico { width: 20px; height: 20px; }
+.board-scroll.can-left .board-nav.prev { display: flex; }
+.board-scroll.can-right .board-nav.next { display: flex; }
+
+/* Petunjuk teks, hilang setelah pengguna menggeser. */
+.board-hint {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--ink-soft);
+    background: var(--blue-hover); border-radius: var(--r-pill);
+    padding: 4px 11px; margin-bottom: 10px;
+    transition: opacity .2s ease;
+}
+.board-hint .ico { width: 14px; height: 14px; }
+.board-scroll.scrolled .board-hint { opacity: 0; }
