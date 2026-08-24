@@ -95,31 +95,61 @@ class EmailQueue
      */
     public function flush(int $limit = 25): array
     {
-        $outbox = model(EmailOutboxModel::class);
-        $rows   = $outbox->pending($limit);
+        $rows   = model(EmailOutboxModel::class)->pending($limit);
         $sent   = 0;
         $failed = 0;
 
         foreach ($rows as $row) {
-            $mailer = service('email', null, false);
-            $mailer->setTo($row['to_email'], $row['to_name'] ?? '');
-            $mailer->setSubject($row['subject']);
-            $mailer->setMessage($row['body']);
-
-            try {
-                if ($mailer->send(false)) {
-                    $outbox->markSent((int) $row['id']);
-                    $sent++;
-                } else {
-                    $outbox->markFailed((int) $row['id'], strip_tags($mailer->printDebugger(['headers'])), (int) $row['attempts']);
-                    $failed++;
-                }
-            } catch (\Throwable $e) {
-                $outbox->markFailed((int) $row['id'], $e->getMessage(), (int) $row['attempts']);
-                $failed++;
-            }
+            $this->deliver($row) ? $sent++ : $failed++;
         }
 
         return ['sent' => $sent, 'failed' => $failed];
+    }
+
+    /**
+     * Kirim satu baris antrean SEKARANG dan kembalikan berhasil/tidak. Dipakai
+     * saat aksi HR ingin emailnya langsung terkirim begitu disimpan (mis.
+     * undangan interview), bukan menunggu proses antrean berkala.
+     *
+     * Gagal kirim tidak pernah melempar keluar: barisnya ditandai `failed` di
+     * antrean sehingga aksi HR tetap berhasil dan emailnya bisa dikirim ulang.
+     */
+    public function sendNow(int $outboxId): bool
+    {
+        $row = model(EmailOutboxModel::class)->find($outboxId);
+
+        return $row ? $this->deliver($row) : false;
+    }
+
+    /** true bila SMTP belum dikonfigurasi, sehingga pengiriman pasti gagal. */
+    public function smtpReady(): bool
+    {
+        $email = config('Email');
+
+        return $email->protocol !== 'smtp' || ! empty($email->SMTPHost);
+    }
+
+    /** Kirim satu baris; catat hasilnya ke antrean. */
+    private function deliver(array $row): bool
+    {
+        $outbox = model(EmailOutboxModel::class);
+        $mailer = service('email', null, false);
+        $mailer->setTo($row['to_email'], $row['to_name'] ?? '');
+        $mailer->setSubject($row['subject']);
+        $mailer->setMessage($row['body']);
+
+        try {
+            if ($mailer->send(false)) {
+                $outbox->markSent((int) $row['id']);
+
+                return true;
+            }
+
+            $outbox->markFailed((int) $row['id'], strip_tags($mailer->printDebugger(['headers'])), (int) $row['attempts']);
+        } catch (\Throwable $e) {
+            $outbox->markFailed((int) $row['id'], $e->getMessage(), (int) $row['attempts']);
+        }
+
+        return false;
     }
 }

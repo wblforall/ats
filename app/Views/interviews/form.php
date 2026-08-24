@@ -81,9 +81,13 @@
 
             <div class="card" style="margin-top:18px;">
                 <label style="display:flex; gap:9px; align-items:flex-start; font-size:13px;">
-                    <input type="checkbox" name="kirim_undangan" value="1" style="margin-top:3px;">
-                    <span>Siapkan email undangan ke pelamar (masuk antrean, dikirim setelah Anda tinjau di menu Email).</span>
+                    <input type="checkbox" name="kirim_undangan" value="1" style="margin-top:3px;" checked>
+                    <span>Kirim email undangan ke pelamar begitu jadwal disimpan.</span>
                 </label>
+                <p style="font-size:11.5px; color:var(--ink-faint); margin:8px 0 0;">
+                    Undangan tercatat di riwayat email pelamar. Bila server email belum diatur,
+                    undangan menunggu di antrean untuk dikirim ulang.
+                </p>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:18px;">

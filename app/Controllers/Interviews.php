@@ -98,19 +98,32 @@ class Interviews extends BaseController
         );
         model(InterviewParticipantModel::class)->sync($interviewId, $dipilih);
 
-        /* Undangan ke pelamar disiapkan di antrean bila diminta. */
+        /* Undangan ke pelamar. Diminta: langsung dikirim begitu jadwal
+           disimpan, bukan sekadar diantrekan. Tetap dicatat di antrean lebih
+           dulu (jejak & bisa kirim ulang), lalu dikirim seketika. */
+        $pesanEmail = '';
         if ($this->request->getPost('kirim_undangan')) {
-            (new EmailQueue())->queueForApplication('interview_invitation', $applicationId, [
+            $queue = new EmailQueue();
+            $outboxId = $queue->queueForApplication('interview_invitation', $applicationId, [
                 'tanggal_interview' => $scheduledAt ? tgl($scheduledAt) : '-',
                 'jam_interview'     => $scheduledAt ? date('H:i', strtotime($scheduledAt)) : '-',
                 'lokasi'            => $data['location'] ?: '-',
                 'link_meeting'      => $data['meeting_link'] ?: '-',
             ], $this->auth['id']);
+
+            if ($outboxId === null) {
+                $pesanEmail = ' Namun template undangan tidak aktif, jadi email tidak dibuat.';
+            } elseif (! $queue->smtpReady()) {
+                $pesanEmail = ' Undangan tersimpan di antrean, tapi SMTP belum diatur — belum terkirim.';
+            } elseif ($queue->sendNow($outboxId)) {
+                $pesanEmail = ' Undangan langsung dikirim ke pelamar.';
+            } else {
+                $pesanEmail = ' Undangan gagal terkirim dan menunggu di antrean untuk dikirim ulang.';
+            }
         }
 
         return redirect()->to(site_url('pelamar/' . $applicationId) . '#interview')
-            ->with('success', 'Interview dijadwalkan.'
-                . ($this->request->getPost('kirim_undangan') ? ' Undangan disiapkan di antrean email.' : ''));
+            ->with('success', 'Interview dijadwalkan.' . $pesanEmail);
     }
 
     /** Ubah status jadwal (selesai / batal / tidak hadir). */

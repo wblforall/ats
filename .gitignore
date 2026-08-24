@@ -131,3 +131,6 @@ writable/uploads/*
 
 # Keluaran alat uji browser (tangkapan layar, berkas contoh)
 /.playwright-mcp/
+
+# Berkas sesi tercecer akibat session.savePath = null (folder literal "null")
+/public/null/
