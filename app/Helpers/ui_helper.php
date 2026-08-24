@@ -72,7 +72,7 @@ if (! function_exists('empty_state')) {
             $html .= '<div class="empty-sub">' . esc($sub) . '</div>';
         }
         if ($ctaText !== '' && $ctaUrl !== '') {
-            $html .= '<a href="' . esc($ctaUrl, 'attr') . '" class="btn btn-primary">' . icon('plus') . ' ' . esc($ctaText) . '</a>';
+            $html .= '<a href="' . esc($ctaUrl, 'attr') . '" class="btn btn-primary btn-cta-empty">' . icon('plus') . '<span>' . esc($ctaText) . '</span></a>';
         }
         $html .= '</div>';
 

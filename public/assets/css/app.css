@@ -457,7 +457,9 @@ table.data.roomy td small { max-width: 260px; }
 .empty svg { width: 46px; height: 46px; color: var(--blue); opacity: .5; margin-bottom: 12px; }
 .empty b { color: var(--ink); font-size: 15px; }
 .empty .empty-sub { font-size: 13px; margin-top: 4px; }
-.empty .btn { margin-top: 16px; }
+.empty .btn { margin-top: 18px; }
+.btn-cta-empty { padding: 10px 18px; font-size: 13.5px; }
+.btn-cta-empty .ico { width: 16px; height: 16px; }
 /* Empty state di dalam kartu kecil (dashboard) lebih ringkas. */
 .empty.mini { padding: 30px 16px; }
 .empty.mini svg { width: 36px; height: 36px; }

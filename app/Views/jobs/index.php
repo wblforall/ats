@@ -11,7 +11,9 @@
         <p class="page-sub"><?= count($jobs) ?> lowongan · <?= esc($auth['unit_name']) ?></p>
     </div>
     <div class="spacer"></div>
-    <a href="<?= site_url('lowongan/baru') ?>" class="btn btn-primary"><?= icon('plus') ?> Lowongan Baru</a>
+    <?php if ($jobs !== []): ?>
+        <a href="<?= site_url('lowongan/baru') ?>" class="btn btn-primary"><?= icon('plus') ?> Lowongan Baru</a>
+    <?php endif; ?>
 </div>
 
 <div class="card" style="margin-bottom:18px;">
