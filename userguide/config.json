@@ -1,0 +1,41 @@
+{
+  "project": "WBL ATS",
+  "module": "ats",
+  "baseUrl": "http://localhost:8080",
+  "login": {
+    "email": "admin@wbl.co.id",
+    "password": "wbl12345",
+    "fieldEmail": "#email",
+    "fieldPassword": "#password",
+    "submit": "button[type=\"submit\"]"
+  },
+  "paths": {
+    "contentSource": "userguide/ats.js",
+    "screenshotScript": "userguide/retake_ats.js",
+    "buildScript": "userguide/build_ug.js",
+    "screenshotsDir": "userguide/screenshots",
+    "pdfOut": "docs/Panduan_Pengguna_WBL_ATS.pdf",
+    "logoStroke": "public/assets/img/logo-wbl-stroke.png"
+  },
+  "screenshotPrefix": "ats",
+  "chromePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "chromePathNote": "Sesuaikan bila Chrome tidak di lokasi default macOS.",
+  "recordIds": {
+    "note": "ID contoh untuk screenshot; sesuaikan bila data berubah. Butuh data demo terisi (php spark db:seed DemoSeeder).",
+    "publicJobSlug": "supervisor-housekeeping-ptc-2608-01",
+    "jobShowId": 6,
+    "applicantDetailId": 17,
+    "interviewEvaluateId": 1,
+    "trackRef": "WBL-2026-000012",
+    "trackEmail": "rizky.ramadhan@example.com"
+  },
+  "cover": {
+    "theme": "Human Capital",
+    "background": "navy + dot field",
+    "ornament": "jaringan talenta (figur orang terhubung), aksen emas",
+    "logo": "logo-wbl-stroke.png (warna asli + stroke putih medium)",
+    "credit": "Ahmad Affan Ridha — Deputy Business & People Development",
+    "copyright": "PT. Nusantara Solusi Teknologi"
+  },
+  "dataNote": "Screenshot butuh data demo. Jalankan: php spark db:seed DemoSeeder. Setelah build, kembalikan DB ke kondisi produksi bila perlu."
+}

@@ -1,0 +1,14 @@
+{
+  "name": "wbl-ats-userguide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sumber & builder User Guide PDF WBL ATS",
+  "scripts": {
+    "shots": "node retake_ats.js && node retake_mob_login.js",
+    "build": "node build_ug.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^23.0.0",
+    "pdf-lib": "^1.17.1"
+  }
+}
