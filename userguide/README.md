@@ -30,6 +30,16 @@ tabel field, callout, dan helper screenshot `ssOnly()/ss2()/ssPair()`.
 Setelah edit, jalankan `npm run build` (screenshot tak perlu diulang bila
 tampilan tak berubah).
 
+## Stroke logo cover
+Logo cover pakai `public/assets/img/logo-wbl-stroke.png` = logo asli + halo putih.
+Untuk regenerasi (mis. menebalkan stroke):
+```bash
+cd userguide
+# ubah GROW di make_logo_stroke.py (5=tipis, 9=sekarang)
+python3 make_logo_stroke.py      # butuh Pillow: pip install Pillow
+node build_ug.js                 # rebuild PDF
+```
+
 ## Catatan
 - Chrome dipakai lewat `puppeteer-core` (path di `build_ug.js`/`config.json`).
 - Screenshot butuh data; ID record ada di `config.json`.

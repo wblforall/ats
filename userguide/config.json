@@ -15,7 +15,9 @@
     "buildScript": "userguide/build_ug.js",
     "screenshotsDir": "userguide/screenshots",
     "pdfOut": "docs/Panduan_Pengguna_WBL_ATS.pdf",
-    "logoStroke": "public/assets/img/logo-wbl-stroke.png"
+    "logoStroke": "public/assets/img/logo-wbl-stroke.png",
+    "logoSource": "public/assets/img/logo-wbl.png",
+    "logoStrokeScript": "userguide/make_logo_stroke.py"
   },
   "screenshotPrefix": "ats",
   "chromePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -35,7 +37,9 @@
     "ornament": "jaringan talenta (figur orang terhubung), aksen emas",
     "logo": "logo-wbl-stroke.png (warna asli + stroke putih medium)",
     "credit": "Ahmad Affan Ridha — Deputy Business & People Development",
-    "copyright": "PT. Nusantara Solusi Teknologi"
+    "copyright": "PT. Nusantara Solusi Teknologi",
+    "logoStrokePx": 9,
+    "logoStrokeNote": "Regenerasi via make_logo_stroke.py (ubah GROW), lalu node build_ug.js. Butuh Pillow (pip install Pillow)."
   },
   "dataNote": "Screenshot butuh data demo. Jalankan: php spark db:seed DemoSeeder. Setelah build, kembalikan DB ke kondisi produksi bila perlu."
 }
