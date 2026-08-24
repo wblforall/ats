@@ -1,0 +1,61 @@
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">
+            <span class="chip"><?= icon('pipeline') ?></span>
+            Pipeline
+        </h1>
+        <p class="page-sub"><?= $total ?> pelamar aktif · <?= esc($auth['unit_name']) ?></p>
+    </div>
+    <div class="spacer"></div>
+    <form method="get" action="<?= site_url('pipeline') ?>">
+        <select name="job" class="form-control" onchange="this.form.submit()" style="min-width:220px;">
+            <option value="">Semua lowongan</option>
+            <?php foreach ($jobs as $job): ?>
+                <option value="<?= $job['id'] ?>" <?= $jobId === (int) $job['id'] ? 'selected' : '' ?>>
+                    <?= esc($job['title']) ?> (<?= (int) $job['applicant_count'] ?>)
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </form>
+</div>
+
+<div class="board">
+    <?php foreach ($stages as $stage): ?>
+        <?php $kartu = $byStage[$stage['id']] ?? []; ?>
+        <div class="board-col">
+            <div class="board-head" style="border-top-color: <?= esc($stage['color']) ?>;">
+                <span><?= esc($stage['name']) ?></span>
+                <span class="board-count"><?= count($kartu) ?></span>
+            </div>
+            <div class="board-body">
+                <?php if ($kartu === []): ?>
+                    <div class="board-empty">—</div>
+                <?php else: ?>
+                    <?php foreach ($kartu as $row): ?>
+                        <a href="<?= site_url('pelamar/' . $row['id']) ?>" class="board-card">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span class="avatar" style="width:26px;height:26px;flex:0 0 26px;font-size:10px;"><?= esc(initials($row['full_name'])) ?></span>
+                                <b style="font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><?= esc($row['full_name']) ?></b>
+                            </div>
+                            <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                <?= esc($row['job_title']) ?>
+                            </div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+                                <small style="color:var(--ink-faint);"><?= sejak($row['applied_at']) ?></small>
+                                <?php if ($row['avg_score'] !== null): ?>
+                                    <span class="badge badge-blue" style="padding:1px 7px;"><?= icon('star') ?> <?= number_format((float) $row['avg_score'], 1) ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<?= $this->endSection() ?>

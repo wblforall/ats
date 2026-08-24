@@ -709,3 +709,47 @@ body.public { background: #F6F8FC; }
 @media (max-width: 700px) {
     .cta-band .btn { margin-left: 0; width: 100%; justify-content: center; }
 }
+
+
+/* --- Papan pipeline (kanban) ---------------------------------------------- */
+.board {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    align-items: flex-start;
+}
+.board-col {
+    flex: 0 0 236px;
+    background: var(--blue-soft);
+    border-radius: var(--r-panel);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 240px);
+}
+.board-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+    color: var(--ink);
+    border-top: 3px solid var(--blue);
+    border-top-left-radius: var(--r-panel);
+    border-top-right-radius: var(--r-panel);
+    background: #fff;
+}
+.board-count {
+    background: var(--blue-hover); color: var(--blue-deep);
+    border-radius: var(--r-pill); font-size: 11px; padding: 1px 9px;
+}
+.board-body { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; }
+.board-empty { text-align: center; color: var(--ink-faint); font-size: 20px; padding: 14px 0; }
+.board-card {
+    display: block; background: #fff; border: 1px solid var(--line);
+    border-radius: 11px; padding: 11px 12px; color: inherit;
+    transition: box-shadow .12s ease, transform .1s ease, border-color .12s ease;
+}
+.board-card:hover {
+    text-decoration: none; border-color: var(--blue);
+    box-shadow: var(--shadow-sm); transform: translateY(-1px);
+}
+.board-card .badge .ico { width: 11px; height: 11px; }

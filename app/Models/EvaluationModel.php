@@ -77,6 +77,7 @@ class EvaluationModel extends Model
         return $this->select('evaluations.*, users.name AS user_name, users.position,
                 interviews.round, interviews.title AS interview_title, interviews.scheduled_at')
             ->join('interviews', 'interviews.id = evaluations.interview_id')
+            ->join('users', 'users.id = evaluations.user_id')
             ->where('interviews.application_id', $applicationId)
             ->where('interviews.deleted_at', null)
             ->orderBy('interviews.round', 'ASC')

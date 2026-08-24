@@ -41,6 +41,23 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('lowongan/(:num)/ubah', 'Jobs::update/$1');
     $routes->post('lowongan/(:num)/hapus', 'Jobs::destroy/$1');
 
+    // Pelamar (lamaran di sisi HR)
+    $routes->get('pelamar', 'Applicants::index');
+    $routes->get('pelamar/(:num)', 'Applicants::show/$1');
+    $routes->get('pelamar/(:num)/cv', 'Applicants::downloadCv/$1');
+    $routes->post('pelamar/(:num)/geser', 'Applicants::move/$1');
+    $routes->post('pelamar/(:num)/catatan', 'Applicants::addNote/$1');
+    $routes->post('pelamar/(:num)/nilai', 'Applicants::rate/$1');
+
+    // Papan pipeline
+    $routes->get('pipeline', 'Pipeline::index');
+
+    // Interview
+    $routes->get('interview', 'Interviews::index');
+    $routes->get('interview/baru/(:num)', 'Interviews::create/$1');
+    $routes->post('interview/baru/(:num)', 'Interviews::store/$1');
+    $routes->post('interview/(:num)/status', 'Interviews::setStatus/$1');
+
     // Master unit usaha — hanya superadmin, karena unit adalah akar
     // pembatasan akses seluruh aplikasi.
     $routes->group('master/unit', ['filter' => 'auth:superadmin'], static function ($routes) {

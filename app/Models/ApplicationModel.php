@@ -47,8 +47,11 @@ class ApplicationModel extends Model
     {
         return $this->select('applications.*,
                 candidates.full_name, candidates.email, candidates.phone, candidates.city,
-                candidates.education_level, candidates.school, candidates.years_experience,
-                candidates.current_position, candidates.is_blacklisted,
+                candidates.gender, candidates.birth_date, candidates.address,
+                candidates.education_level, candidates.school, candidates.major,
+                candidates.years_experience, candidates.current_position, candidates.current_company,
+                candidates.instagram, candidates.linkedin_url, candidates.portfolio_url,
+                candidates.is_blacklisted, candidates.blacklist_reason,
                 jobs.title AS job_title, jobs.code AS job_code, jobs.slug AS job_slug, jobs.unit_id,
                 units.name AS unit_name, units.code AS unit_code,
                 stages.name AS stage_name, stages.slug AS stage_slug, stages.color AS stage_color,
