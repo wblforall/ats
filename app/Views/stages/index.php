@@ -19,7 +19,7 @@
         <table class="data roomy" id="stageTable"
                data-reorder-url="<?= site_url('master/tahapan/urutkan') ?>"
                data-csrf-name="<?= csrf_token() ?>" data-csrf-hash="<?= csrf_hash() ?>">
-            <thead><tr><th style="width:34px;"></th><th>Tahap</th><th>Jenis</th><th class="num">Urut</th><th class="num">Aktif Kini</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th style="width:34px;"></th><th>Tahap</th><th>Jenis</th><th class="num">Aktif Kini</th><th>Status</th><th></th></tr></thead>
             <?php foreach ($stages as $s): ?>
                 <tbody class="drag-group" data-id="<?= $s['id'] ?>">
                     <tr class="view-row" id="view-<?= $s['id'] ?>">
@@ -31,7 +31,6 @@
                             </span>
                         </td>
                         <td><span class="badge badge-gray"><?= $kinds[$s['kind']] ?></span></td>
-                        <td class="num order-num"><?= (int) $s['sort_order'] ?></td>
                         <td class="num"><?= (int) ($counts[$s['id']] ?? 0) ?></td>
                         <td><?= $s['is_active'] ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-gray">Nonaktif</span>' ?></td>
                         <td style="text-align:right; white-space:nowrap;">
@@ -43,7 +42,7 @@
                         </td>
                     </tr>
                     <tr class="edit-row" id="edit-<?= $s['id'] ?>">
-                        <td colspan="7">
+                        <td colspan="6">
                             <form method="post" action="<?= site_url('master/tahapan/' . $s['id'] . '/ubah') ?>" class="edit-panel">
                                 <?= csrf_field() ?>
                                 <div class="form-row"><label>Warna</label><input type="color" name="color" value="<?= esc($s['color']) ?>" style="width:44px; height:38px; border:1px solid var(--line); border-radius:8px; padding:2px;"></div>
