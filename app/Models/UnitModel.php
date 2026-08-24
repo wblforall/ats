@@ -30,6 +30,16 @@ class UnitModel extends Model
         return $this->where('is_active', 1)->orderBy('sort_order', 'ASC')->findAll();
     }
 
+    /** Daftar unit beserta jumlah isinya, untuk halaman master. */
+    public function withUsage()
+    {
+        return $this->select('units.*,
+                (SELECT COUNT(*) FROM departments d WHERE d.unit_id = units.id) AS department_count,
+                (SELECT COUNT(*) FROM jobs j WHERE j.unit_id = units.id AND j.deleted_at IS NULL) AS job_count,
+                (SELECT COUNT(*) FROM users u WHERE u.unit_id = units.id AND u.deleted_at IS NULL) AS user_count')
+            ->orderBy('units.sort_order', 'ASC');
+    }
+
     /** Pasangan id => nama untuk helper form. */
     public function options(): array
     {

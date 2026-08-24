@@ -63,6 +63,37 @@
         });
     });
 
+    /* Dropdown bertingkat: sembunyikan pilihan yang bukan milik unit terpilih.
+       Opsi disembunyikan lewat `hidden` DAN `disabled` — Safari mengabaikan
+       `hidden` pada <option>, sedangkan `disabled` menghalangi pemilihannya
+       di semua peramban. Penguncian sebenarnya tetap di sisi server. */
+    document.querySelectorAll('[data-filter-by-unit]').forEach(function (select) {
+        var unitSelect = document.querySelector(select.getAttribute('data-filter-by-unit'));
+        if (!unitSelect) { return; }
+
+        function terapkan() {
+            var unitId = unitSelect.value;
+            var terpilihMasihSah = false;
+
+            Array.prototype.forEach.call(select.options, function (opt) {
+                var unitOpsi = opt.getAttribute('data-unit');
+                var cocok = !unitOpsi || unitOpsi === unitId;
+
+                opt.hidden = !cocok;
+                opt.disabled = !cocok;
+
+                if (cocok && opt.selected) { terpilihMasihSah = true; }
+            });
+
+            /* Unit berganti sementara departemen lama sudah tidak berlaku —
+               kosongkan, jangan biarkan menyimpan pasangan yang salah. */
+            if (!terpilihMasihSah) { select.value = ''; }
+        }
+
+        unitSelect.addEventListener('change', terapkan);
+        terapkan();
+    });
+
     /* Konfirmasi untuk aksi yang tidak bisa dibatalkan. */
     document.querySelectorAll('[data-confirm]').forEach(function (el) {
         el.addEventListener('click', function (e) {

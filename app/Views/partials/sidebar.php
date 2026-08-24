@@ -20,10 +20,11 @@ $menu = [
 ];
 
 $master = [
-    ['units',    'Unit Usaha', 'building', site_url('master/unit'),    $role === 'superadmin'],
-    ['stages',   'Tahapan',    'layers',   site_url('master/tahapan'), $isBoss],
-    ['users',    'Pengguna',   'shield',   site_url('master/pengguna'), $isBoss],
-    ['settings', 'Pengaturan', 'settings', site_url('pengaturan'),     $isBoss],
+    ['units',       'Unit Usaha', 'building', site_url('master/unit'),       $role === 'superadmin'],
+    ['departments', 'Departemen', 'layers',   site_url('master/departemen'), $isBoss],
+    ['stages',      'Tahapan',    'layers',   site_url('master/tahapan'),    $isBoss],
+    ['users',       'Pengguna',   'shield',   site_url('master/pengguna'),   $isBoss],
+    ['settings',    'Pengaturan', 'settings', site_url('pengaturan'),        $isBoss],
 ];
 ?>
 <aside class="sidebar">

@@ -35,7 +35,7 @@ class Career extends BaseController
         if ($q !== '') {
             $jobs->groupStart()
                 ->like('jobs.title', $q)
-                ->orLike('jobs.department', $q)
+                ->orLike('departments.name', $q)
                 ->orLike('jobs.work_location', $q)
                 ->groupEnd();
         }

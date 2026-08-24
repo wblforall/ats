@@ -27,6 +27,26 @@
                     <div class="alert alert-info"><?= icon('info') ?><span><?= esc(session()->getFlashdata('info')) ?></span></div>
                 <?php endif; ?>
 
+                <?php
+                /* Daftar galat validasi. Ditaruh di layout, bukan di tiap
+                   halaman, supaya kegagalan simpan tidak pernah lolos tanpa
+                   pesan hanya karena satu tampilan lupa menampilkannya. */
+                $galatValidasi = session()->getFlashdata('errors');
+                ?>
+                <?php if (! empty($galatValidasi)): ?>
+                    <div class="alert alert-error">
+                        <?= icon('alert') ?>
+                        <span>
+                            <b>Periksa kembali isian berikut:</b>
+                            <ul style="margin:6px 0 0; padding-left:18px;">
+                                <?php foreach ((array) $galatValidasi as $pesan): ?>
+                                    <li><?= esc($pesan) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </span>
+                    </div>
+                <?php endif; ?>
+
                 <?= $this->renderSection('content') ?>
             </main>
         </div>

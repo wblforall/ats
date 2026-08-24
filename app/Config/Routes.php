@@ -40,4 +40,19 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('lowongan/(:num)/ubah', 'Jobs::edit/$1');
     $routes->post('lowongan/(:num)/ubah', 'Jobs::update/$1');
     $routes->post('lowongan/(:num)/hapus', 'Jobs::destroy/$1');
+
+    // Master unit usaha — hanya superadmin, karena unit adalah akar
+    // pembatasan akses seluruh aplikasi.
+    $routes->group('master/unit', ['filter' => 'auth:superadmin'], static function ($routes) {
+        $routes->get('/', 'Units::index');
+        $routes->post('/', 'Units::store');
+        $routes->post('(:num)/ubah', 'Units::update/$1');
+        $routes->post('(:num)/hapus', 'Units::destroy/$1');
+    });
+
+    // Master departemen — terikat pada unit usaha, tidak bisa menyeberang.
+    $routes->get('master/departemen', 'Departments::index');
+    $routes->post('master/departemen', 'Departments::store');
+    $routes->post('master/departemen/(:num)/ubah', 'Departments::update/$1');
+    $routes->post('master/departemen/(:num)/hapus', 'Departments::destroy/$1');
 });

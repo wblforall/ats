@@ -11,7 +11,7 @@ class JobModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
     protected $allowedFields  = [
-        'unit_id', 'code', 'slug', 'title', 'department', 'employment_type', 'level',
+        'unit_id', 'code', 'slug', 'title', 'department_id', 'employment_type', 'level',
         'work_location', 'openings', 'description', 'requirements', 'benefits',
         'salary_min', 'salary_max', 'salary_visible', 'status', 'published_at',
         'closing_date', 'created_by',
@@ -53,8 +53,10 @@ class JobModel extends Model
     public function withStats(?int $unitId = null)
     {
         $builder = $this->select('jobs.*, units.name AS unit_name, units.code AS unit_code,
+                departments.name AS department,
                 (SELECT COUNT(*) FROM applications a WHERE a.job_id = jobs.id AND a.deleted_at IS NULL) AS applicant_count')
-            ->join('units', 'units.id = jobs.unit_id', 'left');
+            ->join('units', 'units.id = jobs.unit_id', 'left')
+            ->join('departments', 'departments.id = jobs.department_id', 'left');
 
         if ($unitId !== null) {
             $builder->where('jobs.unit_id', $unitId);
@@ -69,8 +71,9 @@ class JobModel extends Model
      */
     public function published()
     {
-        return $this->select('jobs.*, units.name AS unit_name')
+        return $this->select('jobs.*, units.name AS unit_name, departments.name AS department')
             ->join('units', 'units.id = jobs.unit_id', 'left')
+            ->join('departments', 'departments.id = jobs.department_id', 'left')
             ->where('jobs.status', 'open')
             ->where('jobs.published_at IS NOT NULL')
             ->where('jobs.published_at <=', date('Y-m-d H:i:s'))
@@ -93,10 +96,28 @@ class JobModel extends Model
     public function generateCode(string $unitCode): string
     {
         $prefix = strtoupper($unitCode) . '-' . date('ym') . '-';
-        $last   = $this->withDeleted()->like('code', $prefix, 'after')
-            ->orderBy('code', 'DESC')->first();
 
-        $next = $last ? ((int) substr($last['code'], strlen($prefix))) + 1 : 1;
+        /* Urutannya dihitung sebagai angka, bukan diurutkan sebagai teks.
+           Panjang digit bisa bercampur (kode lama "…-06" berdampingan dengan
+           "…-007"), dan urutan teks membaca "…-06" lebih besar daripada
+           "…-007" — hasilnya kode kembar yang ditolak kunci unik. */
+        $rows = $this->withDeleted()->select('code')
+            ->like('code', $prefix, 'after')->findAll();
+
+        $tertinggi = 0;
+        $terpakai  = [];
+        foreach ($rows as $row) {
+            $urutan = (int) substr($row['code'], strlen($prefix));
+            $terpakai[$urutan] = true;
+            $tertinggi = max($tertinggi, $urutan);
+        }
+
+        /* Lewati nomor yang entah bagaimana sudah terpakai, supaya penyimpanan
+           tidak pernah gagal hanya karena bentrok kode. */
+        $next = $tertinggi + 1;
+        while (isset($terpakai[$next])) {
+            $next++;
+        }
 
         return $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
     }

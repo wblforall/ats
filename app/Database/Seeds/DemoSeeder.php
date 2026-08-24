@@ -15,6 +15,14 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         $units  = array_column($this->db->table('units')->get()->getResultArray(), 'id', 'code');
+        /* Departemen kini master tersendiri; dicari per unit supaya lowongan
+           contoh tidak pernah menunjuk departemen milik unit lain. */
+        $deptOf = function (int $unitId, string $nama) {
+            $row = $this->db->table('departments')
+                ->where('unit_id', $unitId)->where('name', $nama)->get()->getRowArray();
+
+            return $row ? (int) $row['id'] : null;
+        };
         $stages = array_column($this->db->table('stages')->orderBy('sort_order')->get()->getResultArray(), 'id', 'slug');
         $admin  = $this->db->table('users')->where('email', 'hrd@wbl.co.id')->get()->getRow('id');
         $now    = date('Y-m-d H:i:s');
@@ -36,7 +44,7 @@ class DemoSeeder extends Seeder
                 'code'            => $code,
                 'slug'            => url_title($title . ' ' . $code, '-', true),
                 'title'           => $title,
-                'department'      => $dept,
+                'department_id'   => $deptOf($units[$unit], $dept),
                 'employment_type' => $type,
                 'level'           => $level,
                 'work_location'   => $unit === 'EST' ? 'Samarinda' : 'Balikpapan',

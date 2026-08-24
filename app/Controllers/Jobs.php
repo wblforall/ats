@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\ApplicationModel;
+use App\Models\DepartmentModel;
 use App\Models\JobModel;
 use App\Models\StageModel;
 use App\Models\UnitModel;
@@ -25,7 +26,7 @@ class Jobs extends BaseController
             $jobs->groupStart()
                 ->like('jobs.title', $q)
                 ->orLike('jobs.code', $q)
-                ->orLike('jobs.department', $q)
+                ->orLike('departments.name', $q)
                 ->groupEnd();
         }
 
@@ -50,10 +51,11 @@ class Jobs extends BaseController
         }
 
         return $this->render('jobs/form', [
-            'title'  => 'Lowongan Baru',
-            'active' => 'jobs',
-            'job'    => null,
-            'units'  => $this->allowedUnits(),
+            'title'       => 'Lowongan Baru',
+            'active'      => 'jobs',
+            'job'         => null,
+            'units'       => $this->allowedUnits(),
+            'departments' => model(DepartmentModel::class)->allActive($this->scopeUnitId()),
         ]);
     }
 
@@ -69,10 +71,11 @@ class Jobs extends BaseController
         }
 
         return $this->render('jobs/form', [
-            'title'  => 'Ubah ' . $job['title'],
-            'active' => 'jobs',
-            'job'    => $job,
-            'units'  => $this->allowedUnits(),
+            'title'       => 'Ubah ' . $job['title'],
+            'active'      => 'jobs',
+            'job'         => $job,
+            'units'       => $this->allowedUnits(),
+            'departments' => model(DepartmentModel::class)->allActive($this->scopeUnitId()),
         ]);
     }
 
@@ -117,10 +120,19 @@ class Jobs extends BaseController
             return redirect()->back()->withInput()->with('error', 'Anda hanya boleh membuat lowongan untuk unit Anda sendiri.');
         }
 
+        /* Departemen terkunci pada unitnya. Penyaringan dropdown di sisi
+           browser hanya membantu pengguna; yang benar-benar menahan adalah
+           pemeriksaan ini, karena POST bisa dikirim langsung tanpa formulir. */
+        $departmentId = (int) $this->request->getPost('department_id') ?: null;
+        if ($departmentId !== null && ! model(DepartmentModel::class)->belongsToUnit($departmentId, $unitId)) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Departemen yang dipilih bukan milik unit tersebut.');
+        }
+
         $data = [
             'unit_id'         => $unitId,
             'title'           => trim((string) $this->request->getPost('title')),
-            'department'      => $this->request->getPost('department') ?: null,
+            'department_id'   => $departmentId,
             'employment_type' => $this->request->getPost('employment_type'),
             'level'           => $this->request->getPost('level') ?: null,
             'work_location'   => $this->request->getPost('work_location') ?: null,

@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call('UnitSeeder');
+        $this->call('DepartmentSeeder');
         $this->call('StageSeeder');
         $this->call('UserSeeder');
         $this->call('EmailTemplateSeeder');

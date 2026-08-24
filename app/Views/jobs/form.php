@@ -2,8 +2,6 @@
 
 <?= $this->section('content') ?>
 
-<?php $errors = session()->getFlashdata('errors') ?? []; ?>
-
 <div class="page-head">
     <div>
         <h1 class="page-title">
@@ -17,18 +15,6 @@
     <div class="spacer"></div>
     <a href="<?= $job ? site_url('lowongan/' . $job['id']) : site_url('lowongan') ?>" class="btn btn-ghost">Batal</a>
 </div>
-
-<?php if ($errors): ?>
-    <div class="alert alert-error">
-        <?= icon('alert') ?>
-        <span>
-            <b>Periksa kembali isian berikut:</b>
-            <ul style="margin:6px 0 0; padding-left:18px;">
-                <?php foreach ($errors as $message): ?><li><?= esc($message) ?></li><?php endforeach; ?>
-            </ul>
-        </span>
-    </div>
-<?php endif; ?>
 
 <form method="post" action="<?= $job ? site_url('lowongan/' . $job['id'] . '/ubah') : site_url('lowongan') ?>">
     <?= csrf_field() ?>
@@ -61,9 +47,28 @@
                     </div>
 
                     <div class="form-row">
-                        <label for="department">Departemen</label>
-                        <input type="text" id="department" name="department" class="form-control"
-                               value="<?= esc(old('department', $job['department'] ?? '')) ?>">
+                        <label for="department_id">Departemen</label>
+                        <?php
+                        /* Semua departemen dirender sekaligus dengan penanda unitnya,
+                           lalu disaring di sisi browser mengikuti unit yang dipilih.
+                           Tanpa JavaScript, seluruh pilihan tetap terlihat — dan
+                           pilihan lintas unit akan ditolak server saat disimpan. */
+                        $departmentIdTerpilih = (int) old('department_id', $job['department_id'] ?? 0);
+                        ?>
+                        <select id="department_id" name="department_id" class="form-control"
+                                data-filter-by-unit="#unit_id">
+                            <option value="">— Tanpa departemen —</option>
+                            <?php foreach ($departments as $dept): ?>
+                                <option value="<?= $dept['id'] ?>" data-unit="<?= $dept['unit_id'] ?>"
+                                        <?= $departmentIdTerpilih === (int) $dept['id'] ? 'selected' : '' ?>>
+                                    <?= esc($dept['name']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="hint">
+                            Hanya departemen milik unit yang dipilih.
+                            <a href="<?= site_url('master/departemen') ?>" target="_blank" rel="noopener">Kelola departemen</a>
+                        </div>
                     </div>
 
                     <div class="form-row">
