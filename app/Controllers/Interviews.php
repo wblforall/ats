@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Libraries\EmailQueue;
 use App\Models\ApplicationModel;
 use App\Models\InterviewModel;
+use App\Models\EvaluationModel;
 use App\Models\InterviewParticipantModel;
 use App\Models\UserModel;
 
@@ -143,6 +144,77 @@ class Interviews extends BaseController
 
         return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
             ->with('success', 'Status interview diperbarui.');
+    }
+
+    /**
+     * Form penilaian untuk satu jadwal. Boleh diisi oleh pewawancara yang
+     * ditugaskan pada jadwal itu, atau manajer HR. Nilai lama (bila sudah
+     * pernah mengisi) ditampilkan untuk diperbarui.
+     */
+    public function evaluate(int $interviewId)
+    {
+        $interview = model(InterviewModel::class)->detailed()->where('interviews.id', $interviewId)->first();
+        if (! $interview || ! $this->reachable($interview)) {
+            return redirect()->to(site_url('interview'))->with('error', 'Jadwal tidak ditemukan.');
+        }
+
+        if (! $this->canEvaluate($interviewId)) {
+            return redirect()->to(site_url('pelamar/' . $interview['application_id']))
+                ->with('error', 'Anda tidak ditugaskan menilai interview ini.');
+        }
+
+        return $this->render('interviews/evaluate', [
+            'title'     => 'Penilaian Interview',
+            'active'    => 'interviews',
+            'interview' => $interview,
+            'app'       => model(ApplicationModel::class)->findDetailed((int) $interview['application_id']),
+            'mine'      => model(EvaluationModel::class)->findMine($interviewId, $this->auth['id']),
+        ]);
+    }
+
+    public function saveEvaluation(int $interviewId)
+    {
+        $interview = model(InterviewModel::class)->detailed()->where('interviews.id', $interviewId)->first();
+        if (! $interview || ! $this->reachable($interview) || ! $this->canEvaluate($interviewId)) {
+            return redirect()->to(site_url('interview'))->with('error', 'Anda tidak berhak menilai interview ini.');
+        }
+
+        $data = [
+            'score_technical'     => $this->score('score_technical'),
+            'score_communication' => $this->score('score_communication'),
+            'score_attitude'      => $this->score('score_attitude'),
+            'score_experience'    => $this->score('score_experience'),
+            'score_culture'       => $this->score('score_culture'),
+            'recommendation'      => $this->request->getPost('recommendation') ?: 'neutral',
+            'strengths'           => $this->request->getPost('strengths') ?: null,
+            'weaknesses'          => $this->request->getPost('weaknesses') ?: null,
+            'notes'               => $this->request->getPost('notes') ?: null,
+        ];
+
+        /* submit() menghitung overall & menyegarkan rata-rata kandidat, lalu
+           menandai jadwal ini selesai bila belum. */
+        model(EvaluationModel::class)->submit($interviewId, $this->auth['id'], $data, (int) $interview['application_id']);
+        if ($interview['status'] === 'scheduled') {
+            model(InterviewModel::class)->update($interviewId, ['status' => 'completed']);
+        }
+
+        return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
+            ->with('success', 'Penilaian disimpan.');
+    }
+
+    /** Skala 1–5; kosong berarti aspek tak dinilai. */
+    private function score(string $field): ?int
+    {
+        $v = $this->request->getPost($field);
+
+        return ($v === null || $v === '') ? null : max(1, min(5, (int) $v));
+    }
+
+    /** Boleh menilai bila ditugaskan pada jadwal, atau manajer HR. */
+    private function canEvaluate(int $interviewId): bool
+    {
+        return $this->isRole('superadmin', 'hr_admin')
+            || model(InterviewParticipantModel::class)->isAssigned($interviewId, (int) $this->auth['id']);
     }
 
     private function scopedApplication(int $id): ?array

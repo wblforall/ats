@@ -130,6 +130,21 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                             Dijadwalkan oleh <b><?= esc($iv['created_by'] ? (model(\App\Models\UserModel::class)->find($iv['created_by'])['name'] ?? '—') : 'sistem') ?></b>
                             pada <?= tgl($iv['created_at'], true) ?>
                         </div>
+                        <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                            <a href="<?= site_url('interview/' . $iv['id'] . '/nilai') ?>" class="btn btn-ghost btn-sm"><?= icon('star') ?> Isi Penilaian</a>
+                            <?php if ($bolehGeser && $iv['status'] === 'scheduled'): ?>
+                                <form method="post" action="<?= site_url('interview/' . $iv['id'] . '/status') ?>" style="display:inline;">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="status" value="completed">
+                                    <button class="btn btn-ghost btn-sm"><?= icon('check') ?> Tandai Selesai</button>
+                                </form>
+                                <form method="post" action="<?= site_url('interview/' . $iv['id'] . '/status') ?>" style="display:inline;">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="status" value="canceled">
+                                    <button class="btn btn-ghost btn-sm" data-confirm="Batalkan jadwal ini?"><?= icon('x') ?> Batalkan</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             <?php endif; ?>

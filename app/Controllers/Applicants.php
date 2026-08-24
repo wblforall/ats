@@ -193,12 +193,34 @@ class Applicants extends BaseController
         return $this->response->download($path, null)->setFileName($namaUnduh);
     }
 
-    /** Ambil lamaran lengkap yang boleh diakses user ini; null bila di luar unitnya. */
+    /**
+     * Ambil lamaran lengkap yang boleh diakses user ini; null bila terlarang.
+     *
+     * Interviewer tidak punya unit kerja tetap, jadi tidak disaring per unit —
+     * ia hanya boleh melihat lamaran yang benar-benar ia wawancarai. HR
+     * disaring seperti biasa per unit.
+     */
     private function findScoped(int $id): ?array
     {
+        if ($this->isRole('interviewer')) {
+            return $this->isAssignedToApplication($id)
+                ? model(ApplicationModel::class)->findDetailed($id)
+                : null;
+        }
+
         $builder = model(ApplicationModel::class)->detailed()->where('applications.id', $id);
         $builder = model(ApplicationModel::class)->scopeUnit($builder, $this->scopeUnitId());
 
         return $builder->first();
+    }
+
+    /** Benarkah user (interviewer) ditugaskan pada suatu interview lamaran ini. */
+    private function isAssignedToApplication(int $applicationId): bool
+    {
+        return model(\App\Models\InterviewParticipantModel::class)
+            ->join('interviews', 'interviews.id = interview_participants.interview_id')
+            ->where('interviews.application_id', $applicationId)
+            ->where('interview_participants.user_id', (int) $this->auth['id'])
+            ->countAllResults() > 0;
     }
 }

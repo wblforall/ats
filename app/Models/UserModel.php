@@ -13,6 +13,10 @@ class UserModel extends Model
     protected $allowedFields  = [
         'unit_id', 'name', 'email', 'password_hash', 'role',
         'position', 'phone', 'is_active', 'last_login_at',
+        // Field virtual: dilewatkan lolos proteksi agar hook hashPassword
+        // sempat mengubahnya jadi password_hash. CI4 menyaring allowedFields
+        // SEBELUM beforeInsert, jadi tanpa ini `password` keburu dibuang.
+        'password',
     ];
     protected $useTimestamps = true;
 
