@@ -312,11 +312,20 @@ a:hover { text-decoration: underline; }
 .page-head .spacer { margin-left: auto; }
 
 .section-title {
-    font-size: 14.5px; font-weight: 700; letter-spacing: .9px;
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; font-weight: 700; letter-spacing: .8px;
     text-transform: uppercase; color: var(--ink);
-    margin: 26px 0 13px;
+    margin: 30px 0 14px;
+}
+.section-title::before {
+    content: ""; width: 3px; height: 14px; border-radius: 3px;
+    background: var(--blue); flex: 0 0 3px;
 }
 .section-title:first-child { margin-top: 0; }
+/* Judul di dalam kartu tak perlu aksen garis. */
+.card > .section-title:first-child { margin-top: 0; }
+.card .section-title::before { display: none; }
+.card .section-title { gap: 0; }
 
 /* --- Komponen umum ------------------------------------------------------- */
 
@@ -415,31 +424,43 @@ table.data thead th {
 table.data tbody td { padding: 13px 13px; border-bottom: 1px solid #F3F4F8; vertical-align: middle; }
 table.data tbody tr:last-child td { border-bottom: 0; }
 table.data tbody tr:hover { background: var(--blue-hover); }
+table.data tbody tr[data-href] { cursor: pointer; }
+table.data tbody tr[data-href]:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; background: var(--blue-hover); }
 table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
 table.data td small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 138px; }
 /* Tabel selebar halaman punya ruang lebih, jadi pemotongan teksnya boleh longgar. */
 table.data.roomy td small { max-width: 260px; }
 
 /* Papan ringkas pipeline di dashboard */
-.stage-strip { display: flex; gap: 6px; overflow-x: auto; padding: 10px 12px; }
+.stage-strip { display: flex; gap: 8px; overflow-x: auto; padding: 12px; }
 .stage-chip {
-    flex: 1 1 0; min-width: 104px;
+    flex: 1 1 0; min-width: 120px;
+    display: flex; flex-direction: column; justify-content: space-between;
     border: 1px solid var(--line); border-top-width: 3px;
-    border-radius: 12px; padding: 11px 12px;
+    border-radius: 12px; padding: 12px 13px;
     background: #fff; color: inherit; text-decoration: none;
-    transition: box-shadow .14s ease, transform .1s ease;
+    transition: box-shadow .14s ease, transform .1s ease, border-color .14s ease;
 }
-.stage-chip:hover { text-decoration: none; box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+.stage-chip:hover { text-decoration: none; box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+/* Label boleh membungkus dua baris — tak pernah terpotong tiga titik. */
 .stage-chip .label {
-    font-size: 10.5px; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-faint);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 10.5px; line-height: 1.3; letter-spacing: .4px; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+    min-height: 27px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.stage-chip .count { font-size: 21px; font-weight: 700; color: var(--ink); margin-top: 2px; }
+.stage-chip .count { font-size: 22px; font-weight: 700; color: var(--ink); margin-top: 8px; }
 
 .empty {
-    text-align: center; padding: 44px 20px; color: var(--ink-soft);
+    text-align: center; padding: 48px 24px; color: var(--ink-soft);
 }
-.empty svg { width: 42px; height: 42px; color: var(--ink-faint); margin-bottom: 10px; }
+.empty svg { width: 46px; height: 46px; color: var(--blue); opacity: .5; margin-bottom: 12px; }
+.empty b { color: var(--ink); font-size: 15px; }
+.empty .empty-sub { font-size: 13px; margin-top: 4px; }
+.empty .btn { margin-top: 16px; }
+/* Empty state di dalam kartu kecil (dashboard) lebih ringkas. */
+.empty.mini { padding: 30px 16px; }
+.empty.mini svg { width: 36px; height: 36px; }
 
 /* --- Form ---------------------------------------------------------------- */
 
@@ -790,3 +811,20 @@ body.public { background: #F6F8FC; }
     background: #fff; border: 1px solid var(--line); border-radius: 12px;
     box-shadow: var(--shadow); padding: 14px; width: 260px;
 }
+
+
+/* --- Master data: baris tampil vs baris edit (klik-untuk-edit) ------------- */
+tr.edit-row { display: none; background: var(--blue-soft); }
+tr.edit-row.open { display: table-row; }
+tr.view-row.editing { display: none; }
+.edit-row td { padding: 16px !important; }
+.edit-panel { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.edit-panel .form-row { margin: 0; }
+.edit-panel .form-row label { font-size: 11px; color: var(--ink-soft); }
+.edit-panel .form-control { width: auto; }
+.btn-icon-only {
+    display: inline-grid; place-items: center; width: 34px; height: 34px;
+    border: 1px solid var(--line); background: #fff; border-radius: 9px;
+    color: var(--ink-soft); cursor: pointer;
+}
+.btn-icon-only:hover { border-color: var(--blue); color: var(--blue); }

@@ -42,7 +42,7 @@
 
 <div class="table-wrap">
     <?php if ($rows === []): ?>
-        <div class="empty"><?= icon('mail') ?><div><b>Tidak ada email.</b></div></div>
+        <?= empty_state('mail', 'Belum ada email', 'Email otomatis & manual ke pelamar tercatat di sini.') ?>
     <?php else: ?>
         <table class="data roomy">
             <thead>

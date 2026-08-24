@@ -2,6 +2,24 @@
 
 <?= $this->section('content') ?>
 
+<?php
+/* Layar pertama saat sistem masih kosong: pandu langkah awal, jangan biarkan
+   user menatap dinding angka 0. */
+$belumMulai = $openJobCount === 0 && $activeTotal === 0 && $recent === [];
+?>
+<?php if ($belumMulai): ?>
+    <div class="card is-blue" style="margin-bottom:22px; display:flex; align-items:center; gap:22px; flex-wrap:wrap;">
+        <div style="flex:1 1 320px;">
+            <div style="font-size:19px; font-weight:700; margin-bottom:4px;">Selamat datang di ATS WBL 👋</div>
+            <div style="opacity:.85; font-size:13.5px;">Belum ada data. Mulai dengan membuat lowongan pertama — begitu tayang, lamaran dari portal karir langsung mengalir ke sini.</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="<?= site_url('lowongan/baru') ?>" class="btn" style="background:#fff; color:var(--blue-deep);"><?= icon('plus') ?> Buat Lowongan</a>
+            <a href="<?= site_url('pengaturan') ?>" class="btn btn-ghost" style="background:rgba(255,255,255,.15); color:#fff;"><?= icon('settings') ?> Atur Perusahaan</a>
+        </div>
+    </div>
+<?php endif; ?>
+
 <div class="page-head">
     <div>
         <h1 class="page-title">
@@ -71,10 +89,9 @@
         <div class="section-title" style="margin-top:0;">Pelamar Terbaru</div>
         <div class="table-wrap">
             <?php if ($recent === []): ?>
-                <div class="empty">
-                    <?= icon('users') ?>
-                    <div>Belum ada lamaran masuk.</div>
-                </div>
+                <?= empty_state('users', 'Belum ada lamaran masuk',
+                    $openJobCount === 0 ? 'Buka lowongan agar pelamar bisa mendaftar.' : 'Lamaran akan muncul di sini begitu ada yang mendaftar.',
+                    $openJobCount === 0 ? 'Buat Lowongan' : '', $openJobCount === 0 ? site_url('lowongan/baru') : '', true) ?>
             <?php else: ?>
                 <table class="data">
                     <thead>
@@ -87,7 +104,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($recent as $row): ?>
-                            <tr onclick="location.href='<?= site_url('pelamar/' . $row['id']) ?>'" style="cursor:pointer;">
+                            <tr data-href="<?= site_url('pelamar/' . $row['id']) ?>" tabindex="0" role="link">
                                 <td>
                                     <div style="display:flex; align-items:center; gap:10px;">
                                         <span class="avatar" style="width:30px;height:30px;flex:0 0 30px;font-size:11px;"><?= esc(initials($row['full_name'])) ?></span>
@@ -119,10 +136,7 @@
         <div class="section-title" style="margin-top:0;">Agenda Interview 7 Hari</div>
         <div class="card" style="padding: 6px;">
             <?php if ($agenda === []): ?>
-                <div class="empty">
-                    <?= icon('calendar') ?>
-                    <div>Tidak ada jadwal interview minggu ini.</div>
-                </div>
+                <?= empty_state('calendar', 'Tidak ada jadwal minggu ini', 'Jadwal interview 7 hari ke depan tampil di sini.', '', '', true) ?>
             <?php else: ?>
                 <?php foreach ($agenda as $iv): ?>
                     <a href="<?= site_url('pelamar/' . $iv['application_id']) ?>" class="list-row">
@@ -143,7 +157,7 @@
         <div class="section-title">Lowongan Paling Ramai</div>
         <div class="card" style="padding: 6px;">
             <?php if ($openJobs === []): ?>
-                <div class="empty"><?= icon('briefcase') ?><div>Belum ada lowongan dibuka.</div></div>
+                <?= empty_state('briefcase', 'Belum ada lowongan dibuka', '', 'Buat Lowongan', site_url('lowongan/baru'), true) ?>
             <?php else: ?>
                 <?php foreach ($openJobs as $job): ?>
                     <a href="<?= site_url('lowongan/' . $job['id']) ?>" class="list-row">

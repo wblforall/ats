@@ -37,7 +37,7 @@
             <thead><tr><th>Lowongan</th><th>Tahap</th><th>Status</th><th>Dilamar</th></tr></thead>
             <tbody>
                 <?php foreach ($applications as $a): ?>
-                    <tr onclick="location.href='<?= site_url('pelamar/' . $a['id']) ?>'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('pelamar/' . $a['id']) ?>" tabindex="0" role="link">
                         <td><?= esc($a['job_title']) ?><br><small><?= esc($a['unit_name']) ?></small></td>
                         <td><span class="badge" style="background:<?= esc($a['stage_color']) ?>1F; color:<?= esc($a['stage_color']) ?>;"><span class="dot"></span><?= esc($a['stage_name']) ?></span></td>
                         <td><?= \App\Models\ApplicationModel::STATUSES[$a['status']] ?></td>

@@ -39,11 +39,10 @@
 
 <div class="table-wrap">
     <?php if ($jobs === []): ?>
-        <div class="empty">
-            <?= icon('briefcase') ?>
-            <div><b>Belum ada lowongan.</b></div>
-            <div style="margin-top:4px;">Mulai dengan membuat lowongan baru.</div>
-        </div>
+        <?= empty_state('briefcase', 'Belum ada lowongan',
+            $filters['q'] !== '' || $filters['status'] !== '' ? 'Tidak ada yang cocok dengan filter. Coba reset.' : 'Buat lowongan pertama Anda — nanti tayang di portal karir.',
+            $filters['q'] === '' && $filters['status'] === '' ? 'Lowongan Baru' : '',
+            site_url('lowongan/baru')) ?>
     <?php else: ?>
         <table class="data roomy">
             <thead>

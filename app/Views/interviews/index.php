@@ -26,7 +26,7 @@
 
 <div class="table-wrap">
     <?php if ($rows === []): ?>
-        <div class="empty"><?= icon('calendar') ?><div><b>Tidak ada jadwal interview di rentang ini.</b></div></div>
+        <?= empty_state('calendar', 'Tidak ada jadwal interview', 'Jadwalkan interview dari halaman detail pelamar.') ?>
     <?php else: ?>
         <table class="data roomy">
             <thead>
@@ -40,7 +40,7 @@
             </thead>
             <tbody>
                 <?php foreach ($rows as $iv): ?>
-                    <tr onclick="location.href='<?= site_url('pelamar/' . $iv['application_id']) ?>#interview'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('pelamar/' . $iv['application_id']) ?>#interview" tabindex="0" role="link">
                         <td>
                             <b><?= hari($iv['scheduled_at']) ?>, <?= tgl($iv['scheduled_at']) ?></b><br>
                             <small><?= date('H:i', strtotime($iv['scheduled_at'])) ?> WITA · putaran <?= (int) $iv['round'] ?></small>

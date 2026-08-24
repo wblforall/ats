@@ -94,6 +94,45 @@
         terapkan();
     });
 
+    /* Baris tabel yang dapat ditautkan: klik di mana saja membuka, dan bisa
+       dijangkau keyboard (Tab lalu Enter/Spasi). Klik pada tautan/tombol di
+       dalam baris tidak ikut memicu navigasi baris. */
+    document.querySelectorAll('tr[data-href]').forEach(function (row) {
+        var go = function () { window.location.href = row.getAttribute('data-href'); };
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('a, button, input, select, textarea, label, form')) return;
+            go();
+        });
+        row.addEventListener('keydown', function (e) {
+            if (e.target !== row) return;
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+        });
+    });
+
+    /* Master data klik-untuk-edit: tombol [data-edit="id"] menukar baris
+       tampilan dengan baris edit (tr#edit-{id}). */
+    document.querySelectorAll('[data-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-edit');
+            var editRow = document.getElementById('edit-' + id);
+            var viewRow = document.getElementById('view-' + id);
+            if (!editRow) return;
+            var open = editRow.classList.toggle('open');
+            if (viewRow) viewRow.classList.toggle('editing', open);
+            if (open) { var inp = editRow.querySelector('input,select,textarea'); if (inp) inp.focus(); }
+        });
+    });
+    document.querySelectorAll('[data-cancel-edit]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-cancel-edit');
+            var editRow = document.getElementById('edit-' + id);
+            var viewRow = document.getElementById('view-' + id);
+            if (editRow) editRow.classList.remove('open');
+            if (viewRow) viewRow.classList.remove('editing');
+        });
+    });
+
     /* Konfirmasi untuk aksi yang tidak bisa dibatalkan. */
     document.querySelectorAll('[data-confirm]').forEach(function (el) {
         el.addEventListener('click', function (e) {

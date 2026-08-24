@@ -62,10 +62,9 @@
 
 <div class="table-wrap">
     <?php if ($rows === []): ?>
-        <div class="empty">
-            <?= icon('users') ?>
-            <div><b>Tidak ada pelamar yang cocok.</b></div>
-        </div>
+        <?= empty_state('users', 'Belum ada pelamar',
+            array_filter($filters) ? 'Tidak ada yang cocok dengan filter. Coba reset.' : 'Pelamar muncul di sini begitu ada yang mendaftar lewat portal karir.',
+            array_filter($filters) ? '' : '', '') ?>
     <?php else: ?>
         <table class="data roomy">
             <thead>
@@ -80,7 +79,7 @@
             </thead>
             <tbody>
                 <?php foreach ($rows as $row): ?>
-                    <tr onclick="location.href='<?= site_url('pelamar/' . $row['id']) ?>'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('pelamar/' . $row['id']) ?>" tabindex="0" role="link">
                         <td>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span class="avatar" style="width:32px;height:32px;flex:0 0 32px;font-size:11px;"><?= esc(initials($row['full_name'])) ?></span>

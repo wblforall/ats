@@ -13,13 +13,13 @@
 </div>
 <div class="table-wrap">
     <?php if ($candidates === []): ?>
-        <div class="empty"><?= icon('user') ?><div><b>Tidak ada kandidat yang cocok.</b></div></div>
+        <?= empty_state('user', 'Belum ada kandidat', $q !== '' ? 'Tidak ada yang cocok dengan pencarian.' : 'Bank talenta terisi otomatis dari setiap orang yang melamar.') ?>
     <?php else: ?>
         <table class="data roomy">
             <thead><tr><th>Nama</th><th>Kontak</th><th>Pendidikan</th><th class="num">Lamaran</th><th>Status</th></tr></thead>
             <tbody>
                 <?php foreach ($candidates as $c): ?>
-                    <tr onclick="location.href='<?= site_url('kandidat/' . $c['id']) ?>'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('kandidat/' . $c['id']) ?>" tabindex="0" role="link">
                         <td>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span class="avatar" style="width:32px;height:32px;flex:0 0 32px;font-size:11px;"><?= esc(initials($c['full_name'])) ?></span>

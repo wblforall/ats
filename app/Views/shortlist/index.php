@@ -40,13 +40,13 @@
 
 <div class="table-wrap">
     <?php if ($rows === []): ?>
-        <div class="empty"><?= icon('star') ?><div><b>Tidak ada pelamar aktif.</b></div></div>
+        <?= empty_state('star', 'Belum ada pelamar aktif', 'Kandidat unggulan muncul begitu ada lamaran yang berjalan.') ?>
     <?php else: ?>
         <table class="data roomy">
             <thead><tr><th style="width:44px;">#</th><th>Potensi</th><th>Nama</th><th>Lowongan</th><th>Tahap</th><th class="num">Interview</th></tr></thead>
             <tbody>
                 <?php foreach ($rows as $i => $row): $s = $row['_score']; ?>
-                    <tr onclick="location.href='<?= site_url('pelamar/' . $row['id']) ?>'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('pelamar/' . $row['id']) ?>" tabindex="0" role="link">
                         <td style="color:var(--ink-faint); font-weight:700;"><?= $i + 1 ?></td>
                         <td><?= potential_badge($s['score'], $s['band']) ?></td>
                         <td>

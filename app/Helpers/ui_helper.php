@@ -56,6 +56,29 @@ if (! function_exists('icon')) {
     }
 }
 
+if (! function_exists('empty_state')) {
+    /**
+     * Empty state yang MEMANDU: ikon, judul, keterangan, dan tombol aksi
+     * opsional. Dipakai agar layar kosong selalu menawarkan langkah berikutnya,
+     * bukan sekadar berkata "belum ada data".
+     */
+    function empty_state(string $icon, string $title, string $sub = '', string $ctaText = '', string $ctaUrl = '', bool $mini = false): string
+    {
+        $html = '<div class="empty' . ($mini ? ' mini' : '') . '">';
+        $html .= icon($icon);
+        $html .= '<div><b>' . esc($title) . '</b></div>';
+        if ($sub !== '') {
+            $html .= '<div class="empty-sub">' . esc($sub) . '</div>';
+        }
+        if ($ctaText !== '' && $ctaUrl !== '') {
+            $html .= '<a href="' . esc($ctaUrl, 'attr') . '" class="btn btn-primary">' . icon('plus') . ' ' . esc($ctaText) . '</a>';
+        }
+        $html .= '</div>';
+
+        return $html;
+    }
+}
+
 if (! function_exists('potential_badge')) {
     /**
      * Badge skor potensi kandidat. $band: high|mid|low|none.

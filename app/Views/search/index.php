@@ -20,7 +20,7 @@
     <div class="table-wrap" style="margin-bottom:22px;">
         <table class="data roomy"><thead><tr><th>Nama</th><th>Lowongan</th><th>Tahap</th></tr></thead><tbody>
             <?php foreach ($pelamar as $r): ?>
-                <tr onclick="location.href='<?= site_url('pelamar/' . $r['id']) ?>'" style="cursor:pointer;">
+                <tr data-href="<?= site_url('pelamar/' . $r['id']) ?>" tabindex="0" role="link">
                     <td><b><?= esc($r['full_name']) ?></b><br><small><?= esc($r['email']) ?></small></td>
                     <td><?= esc($r['job_title']) ?><br><small><?= esc($r['unit_name']) ?></small></td>
                     <td><span class="badge" style="background:<?= esc($r['stage_color']) ?>1F; color:<?= esc($r['stage_color']) ?>;"><span class="dot"></span><?= esc($r['stage_name']) ?></span></td>
@@ -35,7 +35,7 @@
     <div class="table-wrap" style="margin-bottom:22px;">
         <table class="data roomy"><thead><tr><th>Posisi</th><th>Unit</th><th class="num">Pelamar</th></tr></thead><tbody>
             <?php foreach ($lowongan as $j): ?>
-                <tr onclick="location.href='<?= site_url('lowongan/' . $j['id']) ?>'" style="cursor:pointer;">
+                <tr data-href="<?= site_url('lowongan/' . $j['id']) ?>" tabindex="0" role="link">
                     <td><b><?= esc($j['title']) ?></b><br><small><?= esc($j['code']) ?></small></td>
                     <td><small><?= esc($j['unit_name']) ?></small></td>
                     <td class="num"><?= (int) $j['applicant_count'] ?></td>
@@ -50,7 +50,7 @@
     <div class="table-wrap">
         <table class="data roomy"><thead><tr><th>Nama</th><th>Kontak</th><th class="num">Lamaran</th></tr></thead><tbody>
             <?php foreach ($kandidat as $c): ?>
-                <tr onclick="location.href='<?= site_url('kandidat/' . $c['id']) ?>'" style="cursor:pointer;">
+                <tr data-href="<?= site_url('kandidat/' . $c['id']) ?>" tabindex="0" role="link">
                     <td><b><?= esc($c['full_name']) ?></b></td>
                     <td><small><?= esc($c['email']) ?> · <?= esc($c['phone']) ?></small></td>
                     <td class="num"><?= (int) $c['application_count'] ?></td>

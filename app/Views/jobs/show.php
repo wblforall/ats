@@ -91,7 +91,7 @@
             </thead>
             <tbody>
                 <?php foreach ($applicants as $row): ?>
-                    <tr onclick="location.href='<?= site_url('pelamar/' . $row['id']) ?>'" style="cursor:pointer;">
+                    <tr data-href="<?= site_url('pelamar/' . $row['id']) ?>" tabindex="0" role="link">
                         <td>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span class="avatar" style="width:30px;height:30px;flex:0 0 30px;font-size:11px;"><?= esc(initials($row['full_name'])) ?></span>
