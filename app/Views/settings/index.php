@@ -52,6 +52,27 @@
             </label>
         </div>
     </div>
+    <div class="card" style="margin-top:18px;" id="potensi">
+        <div class="section-title" style="margin-top:0;">Bobot Skor Potensi Kandidat</div>
+        <p class="page-sub" style="margin:-6px 0 14px;">Menentukan seberapa besar tiap sinyal memengaruhi skor. Angka relatif — tak harus berjumlah 100.</p>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:14px;">
+            <?php
+            $wf = [
+                'potential_w_interview' => ['Performa Interview', 40],
+                'potential_w_recommendation' => ['Rekomendasi', 25],
+                'potential_w_rating' => ['Rating HR', 20],
+                'potential_w_experience' => ['Pengalaman', 10],
+                'potential_w_education' => ['Pendidikan', 5],
+            ];
+            foreach ($wf as $k => [$lbl, $def]): ?>
+                <div class="form-row" style="margin:0;">
+                    <label for="<?= $k ?>"><?= $lbl ?></label>
+                    <input type="number" id="<?= $k ?>" name="<?= $k ?>" class="form-control" min="0" value="<?= esc($settings[$k] ?? $def) ?>">
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-primary" style="margin-top:18px;"><?= icon('check') ?> Simpan Pengaturan</button>
 </form>
 <?= $this->endSection() ?>

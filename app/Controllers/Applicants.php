@@ -72,6 +72,7 @@ class Applicants extends BaseController
             'title'       => $application['full_name'],
             'active'      => 'apps',
             'app'         => $application,
+            'potential'   => (new \App\Libraries\PotentialScore())->forApplication($application),
             'stages'      => model(StageModel::class)->active(),
             'timeline'    => model(ApplicationHistoryModel::class)->timeline($id),
             'notes'       => model(ApplicationNoteModel::class)->forApplication($id),

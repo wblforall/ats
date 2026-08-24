@@ -55,7 +55,13 @@ class ApplicationModel extends Model
                 jobs.title AS job_title, jobs.code AS job_code, jobs.slug AS job_slug, jobs.unit_id,
                 units.name AS unit_name, units.code AS unit_code,
                 stages.name AS stage_name, stages.slug AS stage_slug, stages.color AS stage_color,
-                stages.kind AS stage_kind, stages.sort_order AS stage_order')
+                stages.kind AS stage_kind, stages.sort_order AS stage_order,
+                (SELECT AVG(CASE ev.recommendation
+                        WHEN "strong_yes" THEN 5 WHEN "yes" THEN 4 WHEN "neutral" THEN 3
+                        WHEN "no" THEN 2 WHEN "strong_no" THEN 1 ELSE 3 END)
+                    FROM evaluations ev
+                    JOIN interviews iv ON iv.id = ev.interview_id
+                    WHERE iv.application_id = applications.id AND iv.deleted_at IS NULL) AS rec_avg')
             ->join('candidates', 'candidates.id = applications.candidate_id')
             ->join('jobs', 'jobs.id = applications.job_id')
             ->join('units', 'units.id = jobs.unit_id', 'left')

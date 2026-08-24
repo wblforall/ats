@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+<?php $scorer = new \App\Libraries\PotentialScore(); ?>
 
 <div class="page-head">
     <div>
@@ -73,7 +74,7 @@
                     <th>Lowongan</th>
                     <th>Tahap</th>
                     <th>Status</th>
-                    <th class="num">Nilai</th>
+                    <th>Potensi</th>
                     <th>Masuk</th>
                 </tr>
             </thead>
@@ -112,7 +113,10 @@
                             ?>
                             <span class="badge <?= $badge ?>"><?= \App\Models\ApplicationModel::STATUSES[$row['status']] ?></span>
                         </td>
-                        <td class="num"><?= $row['avg_score'] !== null ? number_format((float) $row['avg_score'], 1) : '—' ?></td>
+                        <td>
+                            <?php $ps = $scorer->forApplication($row); ?>
+                            <?= potential_badge($ps['score'], $ps['band'], true) ?>
+                        </td>
                         <td><small><?= sejak($row['applied_at']) ?></small></td>
                     </tr>
                 <?php endforeach; ?>

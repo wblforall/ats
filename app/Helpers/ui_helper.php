@@ -56,6 +56,27 @@ if (! function_exists('icon')) {
     }
 }
 
+if (! function_exists('potential_badge')) {
+    /**
+     * Badge skor potensi kandidat. $band: high|mid|low|none.
+     * Dipakai di kartu pipeline, daftar pelamar, dan halaman kandidat unggulan.
+     */
+    function potential_badge(?int $score, string $band, bool $compact = false): string
+    {
+        $cls = ['high' => 'pot-high', 'mid' => 'pot-mid', 'low' => 'pot-low',
+                'prelim' => 'pot-prelim', 'none' => 'pot-none'][$band] ?? 'pot-none';
+        $text = $score === null ? '—' : (string) $score;
+        $label = ['high' => 'Tinggi', 'mid' => 'Sedang', 'low' => 'Rendah',
+                  'prelim' => 'Awal', 'none' => 'Belum dinilai'][$band] ?? '';
+
+        if ($compact) {
+            return '<span class="pot ' . $cls . '" title="Skor potensi: ' . esc($label, 'attr') . '">' . esc($text) . '</span>';
+        }
+
+        return '<span class="pot ' . $cls . '">' . esc($text) . ' · ' . esc($label) . '</span>';
+    }
+}
+
 if (! function_exists('initials')) {
     /** Inisial nama untuk avatar, maksimal dua huruf. */
     function initials(?string $name): string

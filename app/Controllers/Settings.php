@@ -12,6 +12,8 @@ class Settings extends BaseController
         'company_name', 'company_address', 'hr_email', 'hr_phone',
         'career_tagline', 'career_intro', 'cv_max_mb', 'cv_allowed_ext',
         'auto_email_on_apply', 'interview_reminder_hours',
+        'potential_w_interview', 'potential_w_recommendation', 'potential_w_rating',
+        'potential_w_experience', 'potential_w_education',
     ];
 
     public function index()

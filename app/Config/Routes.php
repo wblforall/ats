@@ -55,6 +55,9 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Papan pipeline
     $routes->get('pipeline', 'Pipeline::index');
 
+    // Kandidat unggulan (skor potensi)
+    $routes->get('unggulan', 'Shortlist::index');
+
     // Kandidat (bank talenta)
     $routes->get('kandidat', 'Candidates::index');
     $routes->get('kandidat/(:num)', 'Candidates::show/$1');

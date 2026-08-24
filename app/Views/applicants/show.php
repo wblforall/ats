@@ -204,7 +204,43 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
 
     <!-- ============ KOLOM KANAN: profil ============ -->
     <div>
+        <?php $sc = $potential; ?>
         <div class="card">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div class="section-title" style="margin-top:0;">Skor Potensi</div>
+                <?= potential_badge($sc['score'], $sc['band']) ?>
+            </div>
+            <?php if (! $sc['assessed']): ?>
+                <p style="font-size:12px; color:var(--ink-soft); margin:2px 0 12px;">
+                    Skor <b>awal</b> dari profil saja. Angka menjadi lebih dapat dipercaya setelah
+                    ada penilaian interview atau rating.
+                </p>
+            <?php else: ?>
+                <p style="font-size:12px; color:var(--ink-soft); margin:2px 0 12px;">
+                    Berdasarkan <?= $sc['signals'] ?> dari <?= $sc['total'] ?> sinyal.
+                </p>
+            <?php endif; ?>
+            <?php
+            $labels = (new \App\Libraries\PotentialScore())->componentLabels();
+            foreach ($sc['breakdown'] as $key => $b):
+                $pctOfWeight = $b['value'] === null ? 0 : round($b['value'] * 100);
+            ?>
+                <div style="margin-bottom:9px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:3px;">
+                        <span><?= esc($labels[$key] ?? $key) ?></span>
+                        <span style="color:var(--ink-soft);">
+                            <?= $b['value'] === null ? 'belum ada' : $b['points'] . '/' . $b['weight'] ?>
+                        </span>
+                    </div>
+                    <div class="pot-bar"><span style="width: <?= $b['value'] === null ? 0 : $pctOfWeight ?>%; <?= $b['value'] === null ? 'background:var(--line);' : '' ?>"></span></div>
+                </div>
+            <?php endforeach; ?>
+            <?php if (in_array($auth['role'], ['superadmin','hr_admin'], true)): ?>
+                <a href="<?= site_url('pengaturan') ?>#potensi" style="font-size:11.5px; color:var(--ink-faint);">Setel bobot skor →</a>
+            <?php endif; ?>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
             <div class="section-title" style="margin-top:0;">Data Diri</div>
             <table style="width:100%; font-size:13px; border-collapse:collapse;">
                 <?php

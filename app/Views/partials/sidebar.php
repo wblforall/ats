@@ -12,6 +12,7 @@ $menu = [
     ['dashboard',  'Dashboard',  'dashboard', site_url('dashboard'),   true],
     ['jobs',       'Lowongan',   'briefcase', site_url('lowongan'),    $role !== 'interviewer'],
     ['pipeline',   'Pipeline',   'pipeline',  site_url('pipeline'),    $role !== 'interviewer'],
+    ['shortlist',  'Unggulan',   'star',      site_url('unggulan'),    $role !== 'interviewer'],
     ['apps',       'Pelamar',    'users',     site_url('pelamar'),     $role !== 'interviewer'],
     ['interviews', 'Interview',  'calendar',  site_url('interview'),   true],
     ['candidates', 'Kandidat',   'user',      site_url('kandidat'),    $role !== 'interviewer'],

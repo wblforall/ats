@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+<?php $scorer = new \App\Libraries\PotentialScore(); ?>
 
 <div class="page-head">
     <div>
@@ -44,11 +45,10 @@
                             <div style="font-size:11.5px; color:var(--ink-soft); margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                 <?= esc($row['job_title']) ?>
                             </div>
-                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; gap:6px;">
                                 <small style="color:var(--ink-faint);"><?= sejak($row['applied_at']) ?></small>
-                                <?php if ($row['avg_score'] !== null): ?>
-                                    <span class="badge badge-blue" style="padding:1px 7px;"><?= icon('star') ?> <?= number_format((float) $row['avg_score'], 1) ?></span>
-                                <?php endif; ?>
+                                <?php $ps = $scorer->forApplication($row); ?>
+                                <?= potential_badge($ps['score'], $ps['band'], true) ?>
                             </div>
                         </a>
                     <?php endforeach; ?>
