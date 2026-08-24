@@ -79,6 +79,30 @@ class Stages extends BaseController
         return redirect()->to(site_url('master/tahapan'))->with('success', 'Tahap diperbarui.');
     }
 
+    /**
+     * Simpan urutan baru hasil geser (drag-and-drop). Menerima daftar id tahap
+     * sesuai urutan tampilan, lalu menulis ulang sort_order 1..n. Dipanggil
+     * lewat fetch dari halaman; membalas JSON.
+     */
+    public function reorder()
+    {
+        $ids = $this->request->getPost('order');
+        if (! is_array($ids) || $ids === []) {
+            return $this->response->setJSON(['ok' => false, 'msg' => 'Urutan kosong.', 'csrf' => csrf_hash()]);
+        }
+
+        $stages = model(StageModel::class);
+        $urut   = 1;
+        foreach ($ids as $id) {
+            $id = (int) $id;
+            if ($id > 0) {
+                $stages->update($id, ['sort_order' => $urut++]);
+            }
+        }
+
+        return $this->response->setJSON(['ok' => true, 'csrf' => csrf_hash()]);
+    }
+
     public function destroy(int $id)
     {
         $stage = model(StageModel::class)->find($id);

@@ -85,4 +85,4 @@ defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);    // highest a
  | Ditempel sebagai query string pada CSS/JS supaya browser HR tidak
  | menyajikan berkas lama setelah tampilan diperbarui. Naikkan saat rilis.
  */
-defined('APP_ASSET_VERSION') || define('APP_ASSET_VERSION', '1.1.0');
+defined('APP_ASSET_VERSION') || define('APP_ASSET_VERSION', '1.2.0');

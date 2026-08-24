@@ -828,3 +828,13 @@ tr.view-row.editing { display: none; }
     color: var(--ink-soft); cursor: pointer;
 }
 .btn-icon-only:hover { border-color: var(--blue); color: var(--blue); }
+
+
+/* --- Drag-and-drop urutan tahapan ----------------------------------------- */
+.drag-handle { cursor: grab; color: var(--ink-faint); width: 34px; text-align: center; }
+.drag-handle:hover { color: var(--blue); }
+.drag-handle:active { cursor: grabbing; }
+tbody.drag-group { transition: background .12s ease; }
+tbody.drag-group[draggable="true"] { background: var(--blue-soft); }
+/* Baris tetap utuh saat tabel multi-tbody */
+table.data tbody.drag-group + tbody.drag-group .view-row td { border-top: 1px solid #F3F4F8; }

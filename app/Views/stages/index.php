@@ -5,7 +5,7 @@
 <div class="page-head">
     <div>
         <h1 class="page-title"><span class="chip"><?= icon('layers') ?></span> Tahapan Pipeline</h1>
-        <p class="page-sub"><?= count($stages) ?> tahap · urutan menentukan susunan papan pipeline</p>
+        <p class="page-sub"><?= count($stages) ?> tahap · seret <span style="vertical-align:-2px;"><?= icon('grip') ?></span> untuk mengubah urutan</p>
     </div>
 </div>
 
@@ -16,11 +16,14 @@
 
 <div class="grid" style="grid-template-columns: minmax(0,1fr) minmax(0,300px); align-items:start;">
     <div class="table-wrap">
-        <table class="data roomy">
-            <thead><tr><th>Tahap</th><th>Jenis</th><th class="num">Urut</th><th class="num">Aktif Kini</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-                <?php foreach ($stages as $s): ?>
+        <table class="data roomy" id="stageTable"
+               data-reorder-url="<?= site_url('master/tahapan/urutkan') ?>"
+               data-csrf-name="<?= csrf_token() ?>" data-csrf-hash="<?= csrf_hash() ?>">
+            <thead><tr><th style="width:34px;"></th><th>Tahap</th><th>Jenis</th><th class="num">Urut</th><th class="num">Aktif Kini</th><th>Status</th><th></th></tr></thead>
+            <?php foreach ($stages as $s): ?>
+                <tbody class="drag-group" data-id="<?= $s['id'] ?>">
                     <tr class="view-row" id="view-<?= $s['id'] ?>">
+                        <td class="drag-handle" title="Seret untuk mengurutkan"><?= icon('grip') ?></td>
                         <td>
                             <span style="display:inline-flex; align-items:center; gap:9px;">
                                 <span style="width:14px; height:14px; border-radius:4px; background:<?= esc($s['color']) ?>;"></span>
@@ -28,7 +31,7 @@
                             </span>
                         </td>
                         <td><span class="badge badge-gray"><?= $kinds[$s['kind']] ?></span></td>
-                        <td class="num"><?= (int) $s['sort_order'] ?></td>
+                        <td class="num order-num"><?= (int) $s['sort_order'] ?></td>
                         <td class="num"><?= (int) ($counts[$s['id']] ?? 0) ?></td>
                         <td><?= $s['is_active'] ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-gray">Nonaktif</span>' ?></td>
                         <td style="text-align:right; white-space:nowrap;">
@@ -40,7 +43,7 @@
                         </td>
                     </tr>
                     <tr class="edit-row" id="edit-<?= $s['id'] ?>">
-                        <td colspan="6">
+                        <td colspan="7">
                             <form method="post" action="<?= site_url('master/tahapan/' . $s['id'] . '/ubah') ?>" class="edit-panel">
                                 <?= csrf_field() ?>
                                 <div class="form-row"><label>Warna</label><input type="color" name="color" value="<?= esc($s['color']) ?>" style="width:44px; height:38px; border:1px solid var(--line); border-radius:8px; padding:2px;"></div>
@@ -50,7 +53,7 @@
                                         <?php foreach ($kinds as $k => $lbl): ?><option value="<?= $k ?>" <?= $s['kind'] === $k ? 'selected' : '' ?>><?= $lbl ?></option><?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="form-row"><label>Urutan</label><input type="number" name="sort_order" class="form-control" style="width:70px;" value="<?= (int) $s['sort_order'] ?>"></div>
+                                <input type="hidden" name="sort_order" value="<?= (int) $s['sort_order'] ?>">
                                 <input type="hidden" name="is_active" value="0">
                                 <label style="display:flex; gap:6px; align-items:center; font-size:13px; padding-bottom:9px;"><input type="checkbox" name="is_active" value="1" <?= $s['is_active'] ? 'checked' : '' ?>> Aktif</label>
                                 <button type="submit" class="btn btn-primary btn-sm"><?= icon('check') ?> Simpan</button>
@@ -58,9 +61,10 @@
                             </form>
                         </td>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
+                </tbody>
+            <?php endforeach; ?>
         </table>
+        <p id="reorderMsg" style="font-size:12.5px; color:var(--ink-soft); margin:10px 2px 0; display:none;"></p>
     </div>
 
     <div class="card">

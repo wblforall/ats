@@ -101,6 +101,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 
         $routes->get('master/tahapan', 'Stages::index');
         $routes->post('master/tahapan', 'Stages::store');
+        $routes->post('master/tahapan/urutkan', 'Stages::reorder');
         $routes->post('master/tahapan/(:num)/ubah', 'Stages::update/$1');
         $routes->post('master/tahapan/(:num)/hapus', 'Stages::destroy/$1');
 

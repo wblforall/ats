@@ -42,6 +42,7 @@ if (! function_exists('icon')) {
             'clock'      => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
             'arrow-right'=> '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
             'chevron-down'=> '<path d="m6 9 6 6 6-6"/>',
+            'grip'        => '<circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/>',
         ];
 
         $body = $paths[$name] ?? $paths['info'];
