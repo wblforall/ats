@@ -17,7 +17,7 @@
             <div><span style="color:var(--ink-soft);">Pengalaman:</span> <b><?= $app['years_experience'] !== null ? rtrim(rtrim(number_format((float)$app['years_experience'],1),'0'),'.,') . ' th' : '—' ?></b></div>
             <div><span style="color:var(--ink-soft);">Posisi kini:</span> <b><?= esc($app['current_position'] ?: '—') ?></b></div>
             <?php if ($app['cv_path']): ?>
-                <a href="<?= site_url('pelamar/' . $app['id'] . '/cv') ?>" class="btn btn-ghost btn-sm"><?= icon('download') ?> Unduh CV</a>
+                <a href="<?= site_url('pelamar/' . $app['id'] . '/cv') ?>" target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><?= icon('eye') ?> Lihat CV</a>
             <?php endif; ?>
         </div>
     </div>

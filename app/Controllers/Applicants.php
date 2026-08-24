@@ -265,10 +265,27 @@ class Applicants extends BaseController
             return redirect()->to(site_url('pelamar/' . $id))->with('error', 'Berkas CV sudah tidak ada di server.');
         }
 
-        $namaUnduh = $application['cv_original']
-            ?: ('CV-' . url_title($application['full_name'], '-', true) . '.' . pathinfo($path, PATHINFO_EXTENSION));
+        $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $nama = $application['cv_original']
+            ?: ('CV-' . url_title($application['full_name'], '-', true) . '.' . $ext);
 
-        return $this->response->download($path, null)->setFileName($namaUnduh);
+        $mime = [
+            'pdf'  => 'application/pdf',
+            'doc'  => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ][$ext] ?? 'application/octet-stream';
+
+        /* Sajikan `inline` supaya CV tampil langsung di tab peramban, bukan
+           terunduh. PDF ter-preview; format yang tak bisa dirender peramban
+           (doc/docx) akan tetap terunduh dengan nama yang benar. Nama file
+           dibersihkan dari karakter yang bisa merusak header. */
+        $namaAman = str_replace(['"', "\r", "\n"], '', $nama);
+
+        return $this->response
+            ->setHeader('Content-Type', $mime)
+            ->setHeader('Content-Disposition', 'inline; filename="' . $namaAman . '"')
+            ->setHeader('X-Content-Type-Options', 'nosniff')
+            ->setBody(file_get_contents($path));
     }
 
     /**

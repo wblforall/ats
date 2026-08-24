@@ -20,7 +20,7 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
     </div>
     <div class="spacer"></div>
     <?php if ($app['cv_path']): ?>
-        <a href="<?= site_url('pelamar/' . $app['id'] . '/cv') ?>" class="btn btn-ghost"><?= icon('download') ?> Unduh CV</a>
+        <a href="<?= site_url('pelamar/' . $app['id'] . '/cv') ?>" target="_blank" rel="noopener" class="btn btn-ghost"><?= icon('eye') ?> Lihat CV</a>
     <?php endif; ?>
     <?php if (in_array($auth['role'], ['superadmin','hr_admin'], true) && ! empty($templates)): ?>
         <details class="inline-menu">
