@@ -117,21 +117,34 @@ class Applicants extends BaseController
             return redirect()->back()->with('error', 'Gagal menggeser tahap.');
         }
 
-        /* Email otomatis untuk tahap penutup — hanya bila template-nya aktif.
-           Sengaja diantrekan (bukan dikirim langsung) supaya HR sempat memeriksa
-           di menu Email sebelum sampai ke pelamar. */
-        $autoTemplate = match ($stage['kind']) {
-            'hired'    => 'hired_welcome',
-            'rejected' => 'rejection',
-            default    => null,
+        /* Email pemberitahuan yang cocok dengan tahap tujuan. Template yang
+           ber-flag auto_send dikirim langsung; sisanya hanya diantrekan agar
+           HR sempat meninjau di menu Email. Pemetaan tahap→template memakai
+           kind (hired/rejected) dan slug (penawaran). */
+        $templateCode = match (true) {
+            $stage['kind'] === 'hired'      => 'hired_welcome',
+            $stage['kind'] === 'rejected'   => 'rejection',
+            $stage['slug'] === 'penawaran'  => 'offer_letter',
+            default                         => null,
         };
-        if ($autoTemplate) {
-            (new EmailQueue())->queueForApplication($autoTemplate, $id, [], $this->auth['id']);
+
+        $emailMsg = '';
+        if ($templateCode) {
+            $tpl = model(\App\Models\EmailTemplateModel::class)->findByCode($templateCode);
+            if ($tpl) {
+                $queue    = new EmailQueue();
+                $outboxId = $queue->queueForApplication($templateCode, $id, [], $this->auth['id']);
+
+                if ($outboxId && $tpl['auto_send'] && $queue->smtpReady() && $queue->sendNow($outboxId)) {
+                    $emailMsg = ' Email "' . $tpl['name'] . '" langsung dikirim.';
+                } elseif ($outboxId) {
+                    $emailMsg = ' Email "' . $tpl['name'] . '" disiapkan di antrean.';
+                }
+            }
         }
 
         return redirect()->to(site_url('pelamar/' . $id))
-            ->with('success', 'Tahap dipindah ke "' . $stage['name'] . '".'
-                . ($autoTemplate ? ' Email pemberitahuan disiapkan di antrean.' : ''));
+            ->with('success', 'Tahap dipindah ke "' . $stage['name'] . '".' . $emailMsg);
     }
 
     public function addNote(int $id)
@@ -169,6 +182,70 @@ class Applicants extends BaseController
         model(ApplicationModel::class)->update($id, ['rating' => $rating ?: null]);
 
         return redirect()->to(site_url('pelamar/' . $id))->with('success', 'Penilaian bintang disimpan.');
+    }
+
+    /**
+     * Kirim email ke pelamar dari template terpilih. Langsung dikirim bila
+     * SMTP siap; kalau tidak, menunggu di antrean. HR memilih template dan
+     * placeholder terisi otomatis dari data lamaran.
+     */
+    public function sendEmail(int $id)
+    {
+        $application = $this->findScoped($id);
+        if (! $application) {
+            return redirect()->to(site_url('pelamar'))->with('error', 'Pelamar tidak ditemukan.');
+        }
+        if (! $this->isManager()) {
+            return redirect()->back()->with('error', 'Hanya Admin HRD yang boleh mengirim email.');
+        }
+
+        $code = (string) $this->request->getPost('template_code');
+        if ($code === '') {
+            return redirect()->back()->with('error', 'Pilih template email lebih dulu.');
+        }
+
+        $queue    = new EmailQueue();
+        $outboxId = $queue->queueForApplication($code, $id, [], $this->auth['id']);
+
+        if ($outboxId === null) {
+            return redirect()->back()->with('error', 'Template tidak ditemukan atau nonaktif.');
+        }
+
+        $pesan = 'Email disiapkan.';
+        if (! $queue->smtpReady()) {
+            $pesan = 'Email masuk antrean; SMTP belum diatur jadi belum terkirim.';
+        } elseif ($queue->sendNow($outboxId)) {
+            $pesan = 'Email terkirim ke pelamar.';
+        } else {
+            $pesan = 'Email gagal terkirim dan menunggu di antrean.';
+        }
+
+        return redirect()->to(site_url('pelamar/' . $id))->with('success', $pesan);
+    }
+
+    /** Tandai pelamar mengundurkan diri. */
+    public function withdraw(int $id)
+    {
+        $application = $this->findScoped($id);
+        if (! $application) {
+            return redirect()->to(site_url('pelamar'))->with('error', 'Pelamar tidak ditemukan.');
+        }
+        if (! $this->isRole('superadmin', 'hr_admin', 'hr_staff')) {
+            return redirect()->back()->with('error', 'Anda tidak berhak mengubah status ini.');
+        }
+
+        $reason = trim((string) $this->request->getPost('reason')) ?: 'Mengundurkan diri';
+        model(ApplicationModel::class)->update($id, [
+            'status'    => 'withdrawn',
+            'closed_at' => date('Y-m-d H:i:s'),
+        ]);
+        model(\App\Models\ApplicationNoteModel::class)->insert([
+            'application_id' => $id,
+            'user_id'        => $this->auth['id'],
+            'note'           => 'Pelamar mengundurkan diri. ' . $reason,
+        ]);
+
+        return redirect()->to(site_url('pelamar/' . $id))->with('info', 'Pelamar ditandai mengundurkan diri.');
     }
 
     /**

@@ -1,19 +1,26 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+<?php
+$isEdit  = ! empty($interview);
+$action  = $isEdit ? site_url('interview/' . $interview['id'] . '/ubah') : site_url('interview/baru/' . $app['id']);
+$chosen  = $chosen ?? [];
+$vTgl    = $isEdit ? date('Y-m-d', strtotime($interview['scheduled_at'])) : old('tanggal');
+$vJam    = $isEdit ? date('H:i', strtotime($interview['scheduled_at'])) : old('jam', '10:00');
+?>
 
 <div class="page-head">
     <div>
-        <a href="<?= site_url('pelamar/' . $app['id']) ?>" style="font-size:13px; color:var(--ink-soft);">← Kembali ke pelamar</a>
+        <a href="<?= site_url('pelamar/' . $app['id']) ?>#interview" style="font-size:13px; color:var(--ink-soft);">← Kembali ke pelamar</a>
         <h1 class="page-title" style="margin-top:8px;">
             <span class="chip"><?= icon('calendar') ?></span>
-            Jadwalkan Interview
+            <?= $isEdit ? 'Ubah Jadwal Interview' : 'Jadwalkan Interview' ?>
         </h1>
         <p class="page-sub"><?= esc($app['full_name']) ?> · <?= esc($app['job_title']) ?> (<?= esc($app['unit_name']) ?>)</p>
     </div>
 </div>
 
-<form method="post" action="<?= site_url('interview/baru/' . $app['id']) ?>">
+<form method="post" action="<?= $action ?>">
     <?= csrf_field() ?>
 
     <div class="grid" style="grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items:start;">
@@ -23,30 +30,30 @@
             <div class="grid grid-2">
                 <div class="form-row">
                     <label for="round">Putaran</label>
-                    <input type="number" id="round" name="round" class="form-control" min="1" value="<?= (int) $nextRound ?>">
+                    <input type="number" id="round" name="round" class="form-control" min="1" value="<?= (int) ($isEdit ? $interview['round'] : $nextRound) ?>">
                 </div>
                 <div class="form-row">
                     <label for="title">Judul (opsional)</label>
-                    <input type="text" id="title" name="title" class="form-control" value="<?= esc(old('title')) ?>" placeholder="mis. Wawancara HRD">
+                    <input type="text" id="title" name="title" class="form-control" value="<?= esc(old('title', $isEdit ? $interview['title'] : '')) ?>" placeholder="mis. Wawancara HRD">
                 </div>
                 <div class="form-row">
                     <label for="tanggal">Tanggal <span class="req">*</span></label>
                     <input type="date" id="tanggal" name="tanggal" class="form-control" required
-                           min="<?= date('Y-m-d') ?>" value="<?= esc(old('tanggal')) ?>">
+                           value="<?= esc($vTgl) ?>">
                 </div>
                 <div class="form-row">
                     <label for="jam">Jam <span class="req">*</span></label>
-                    <input type="time" id="jam" name="jam" class="form-control" required value="<?= esc(old('jam', '10:00')) ?>">
+                    <input type="time" id="jam" name="jam" class="form-control" required value="<?= esc($vJam) ?>">
                 </div>
                 <div class="form-row">
                     <label for="duration_min">Durasi (menit)</label>
-                    <input type="number" id="duration_min" name="duration_min" class="form-control" min="15" step="15" value="<?= esc(old('duration_min', 60)) ?>">
+                    <input type="number" id="duration_min" name="duration_min" class="form-control" min="15" step="15" value="<?= esc(old('duration_min', $isEdit ? $interview['duration_min'] : 60)) ?>">
                 </div>
                 <div class="form-row">
                     <label for="mode">Mode</label>
                     <select id="mode" name="mode" class="form-control" data-mode>
                         <?php foreach (\App\Models\InterviewModel::MODES as $key => $label): ?>
-                            <option value="<?= $key ?>" <?= old('mode') === $key ? 'selected' : '' ?>><?= $label ?></option>
+                            <option value="<?= $key ?>" <?= old('mode', $isEdit ? $interview['mode'] : '') === $key ? 'selected' : '' ?>><?= $label ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -54,11 +61,11 @@
 
             <div class="form-row" data-when="onsite,phone">
                 <label for="location">Lokasi</label>
-                <input type="text" id="location" name="location" class="form-control" value="<?= esc(old('location')) ?>" placeholder="mis. Ruang Rapat HRD, Lantai 3">
+                <input type="text" id="location" name="location" class="form-control" value="<?= esc(old('location', $isEdit ? $interview['location'] : '')) ?>" placeholder="mis. Ruang Rapat HRD, Lantai 3">
             </div>
             <div class="form-row" data-when="online">
                 <label for="meeting_link">Tautan Meeting</label>
-                <input type="url" id="meeting_link" name="meeting_link" class="form-control" value="<?= esc(old('meeting_link')) ?>" placeholder="https://meet.google.com/...">
+                <input type="url" id="meeting_link" name="meeting_link" class="form-control" value="<?= esc(old('meeting_link', $isEdit ? $interview['meeting_link'] : '')) ?>" placeholder="https://meet.google.com/...">
             </div>
         </div>
 
@@ -71,7 +78,7 @@
                     <div style="display:flex; flex-direction:column; gap:8px;">
                         <?php foreach ($interviewers as $uid => $nama): ?>
                             <label style="display:flex; gap:9px; align-items:center; font-size:13.5px;">
-                                <input type="checkbox" name="participants[]" value="<?= $uid ?>">
+                                <input type="checkbox" name="participants[]" value="<?= $uid ?>" <?= in_array((int)$uid, $chosen, true) ? 'checked' : '' ?>>
                                 <?= esc($nama) ?>
                             </label>
                         <?php endforeach; ?>
@@ -79,6 +86,7 @@
                 <?php endif; ?>
             </div>
 
+            <?php if (! $isEdit): ?>
             <div class="card" style="margin-top:18px;">
                 <label style="display:flex; gap:9px; align-items:flex-start; font-size:13px;">
                     <input type="checkbox" name="kirim_undangan" value="1" style="margin-top:3px;" checked>
@@ -89,9 +97,10 @@
                     undangan menunggu di antrean untuk dikirim ulang.
                 </p>
             </div>
+            <?php endif; ?>
 
             <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:18px;">
-                <?= icon('check') ?> Simpan Jadwal
+                <?= icon('check') ?> <?= $isEdit ? 'Simpan Perubahan' : 'Simpan Jadwal' ?>
             </button>
         </div>
     </div>

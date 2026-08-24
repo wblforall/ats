@@ -127,6 +127,64 @@ class Interviews extends BaseController
             ->with('success', 'Interview dijadwalkan.' . $pesanEmail);
     }
 
+    /** Form ubah jadwal interview yang sudah ada. */
+    public function edit(int $id)
+    {
+        $interview = model(InterviewModel::class)->detailed()->where('interviews.id', $id)->first();
+        if (! $interview || ! $this->reachable($interview)) {
+            return redirect()->to(site_url('interview'))->with('error', 'Jadwal tidak ditemukan.');
+        }
+        if (! $this->isRole('superadmin', 'hr_admin', 'hr_staff')) {
+            return redirect()->to(site_url('pelamar/' . $interview['application_id']))->with('error', 'Anda tidak berhak mengubah jadwal.');
+        }
+
+        return $this->render('interviews/form', [
+            'title'        => 'Ubah Jadwal Interview',
+            'active'       => 'interviews',
+            'app'          => $this->scopedApplication((int) $interview['application_id']),
+            'interview'    => $interview,
+            'nextRound'    => (int) $interview['round'],
+            'interviewers' => model(UserModel::class)->interviewerOptions($interview['unit_id']),
+            'chosen'       => model(InterviewParticipantModel::class)->idsFor($id),
+        ]);
+    }
+
+    public function updateInterview(int $id)
+    {
+        $interview = model(InterviewModel::class)->detailed()->where('interviews.id', $id)->first();
+        if (! $interview || ! $this->reachable($interview)) {
+            return redirect()->to(site_url('interview'))->with('error', 'Jadwal tidak ditemukan.');
+        }
+        if (! $this->isRole('superadmin', 'hr_admin', 'hr_staff')) {
+            return redirect()->to(site_url('pelamar/' . $interview['application_id']))->with('error', 'Anda tidak berhak mengubah jadwal.');
+        }
+
+        $tanggal = trim((string) $this->request->getPost('tanggal'));
+        $jam     = trim((string) $this->request->getPost('jam'));
+        $scheduledAt = $tanggal && $jam ? $tanggal . ' ' . $jam . ':00' : $interview['scheduled_at'];
+
+        $interviews = model(InterviewModel::class);
+        $ok = $interviews->update($id, [
+            'round'        => (int) $this->request->getPost('round') ?: (int) $interview['round'],
+            'title'        => $this->request->getPost('title') ?: null,
+            'mode'         => $this->request->getPost('mode') ?: 'onsite',
+            'scheduled_at' => $scheduledAt,
+            'duration_min' => (int) $this->request->getPost('duration_min') ?: 60,
+            'location'     => $this->request->getPost('location') ?: null,
+            'meeting_link' => $this->request->getPost('meeting_link') ?: null,
+        ]);
+        if (! $ok) {
+            return redirect()->back()->withInput()->with('errors', $interviews->errors());
+        }
+
+        $sah = array_keys(model(UserModel::class)->interviewerOptions($interview['unit_id']));
+        $dipilih = array_intersect(array_map('intval', (array) $this->request->getPost('participants')), $sah);
+        model(InterviewParticipantModel::class)->sync($id, $dipilih);
+
+        return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
+            ->with('success', 'Jadwal interview diperbarui.');
+    }
+
     /** Ubah status jadwal (selesai / batal / tidak hadir). */
     public function setStatus(int $id)
     {

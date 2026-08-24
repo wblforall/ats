@@ -22,6 +22,32 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
     <?php if ($app['cv_path']): ?>
         <a href="<?= site_url('pelamar/' . $app['id'] . '/cv') ?>" class="btn btn-ghost"><?= icon('download') ?> Unduh CV</a>
     <?php endif; ?>
+    <?php if (in_array($auth['role'], ['superadmin','hr_admin'], true) && ! empty($templates)): ?>
+        <details class="inline-menu">
+            <summary class="btn btn-ghost"><?= icon('mail') ?> Kirim Email</summary>
+            <form method="post" action="<?= site_url('pelamar/' . $app['id'] . '/email') ?>" class="inline-pop">
+                <?= csrf_field() ?>
+                <label style="font-size:12px; color:var(--ink-soft);">Pilih template</label>
+                <select name="template_code" class="form-control" required style="margin:6px 0 10px;">
+                    <?php foreach ($templates as $code => $nama): ?>
+                        <option value="<?= esc($code) ?>"><?= esc($nama) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm" style="width:100%; justify-content:center;">Kirim Sekarang</button>
+            </form>
+        </details>
+    <?php endif; ?>
+    <?php if ($app['status'] === 'active' && in_array($auth['role'], ['superadmin','hr_admin','hr_staff'], true)): ?>
+        <details class="inline-menu">
+            <summary class="btn btn-ghost"><?= icon('x') ?> Mundur</summary>
+            <form method="post" action="<?= site_url('pelamar/' . $app['id'] . '/mundur') ?>" class="inline-pop">
+                <?= csrf_field() ?>
+                <label style="font-size:12px; color:var(--ink-soft);">Alasan (opsional)</label>
+                <input type="text" name="reason" class="form-control" style="margin:6px 0 10px;" placeholder="mis. terima tawaran lain">
+                <button type="submit" class="btn btn-danger btn-sm" style="width:100%; justify-content:center;" data-confirm="Tandai pelamar mengundurkan diri?">Tandai Mundur</button>
+            </form>
+        </details>
+    <?php endif; ?>
 </div>
 
 <?php if ($app['is_blacklisted']): ?>
@@ -133,6 +159,9 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                         <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
                             <a href="<?= site_url('interview/' . $iv['id'] . '/nilai') ?>" class="btn btn-ghost btn-sm"><?= icon('star') ?> Isi Penilaian</a>
                             <?php if ($bolehGeser && $iv['status'] === 'scheduled'): ?>
+                                <a href="<?= site_url('interview/' . $iv['id'] . '/ubah') ?>" class="btn btn-ghost btn-sm"><?= icon('edit') ?> Ubah Jadwal</a>
+                            <?php endif; ?>
+                            <?php if ($bolehGeser && $iv['status'] === 'scheduled'): ?>
                                 <form method="post" action="<?= site_url('interview/' . $iv['id'] . '/status') ?>" style="display:inline;">
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="status" value="completed">
@@ -235,8 +264,23 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                     <div class="pot-bar"><span style="width: <?= $b['value'] === null ? 0 : $pctOfWeight ?>%; <?= $b['value'] === null ? 'background:var(--line);' : '' ?>"></span></div>
                 </div>
             <?php endforeach; ?>
+            <div style="border-top:1px solid var(--line); margin-top:10px; padding-top:12px;">
+                <div style="font-size:12px; color:var(--ink-soft); margin-bottom:6px;">Rating HR</div>
+                <form method="post" action="<?= site_url('pelamar/' . $app['id'] . '/nilai') ?>" style="display:flex; align-items:center; gap:6px;">
+                    <?= csrf_field() ?>
+                    <?php $cur = (int) ($app['rating'] ?? 0); ?>
+                    <div class="star-pick">
+                        <?php for ($i = 5; $i >= 1; $i--): ?>
+                            <button type="submit" name="rating" value="<?= $i ?>" class="star-btn <?= $i <= $cur ? 'on' : '' ?>" title="<?= $i ?> bintang">★</button>
+                        <?php endfor; ?>
+                    </div>
+                    <?php if ($cur > 0): ?>
+                        <button type="submit" name="rating" value="0" class="btn btn-ghost btn-sm" style="margin-left:6px;" title="Hapus rating">×</button>
+                    <?php endif; ?>
+                </form>
+            </div>
             <?php if (in_array($auth['role'], ['superadmin','hr_admin'], true)): ?>
-                <a href="<?= site_url('pengaturan') ?>#potensi" style="font-size:11.5px; color:var(--ink-faint);">Setel bobot skor →</a>
+                <a href="<?= site_url('pengaturan') ?>#potensi" style="font-size:11.5px; color:var(--ink-faint); display:inline-block; margin-top:10px;">Setel bobot skor →</a>
             <?php endif; ?>
         </div>
 

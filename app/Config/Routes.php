@@ -51,6 +51,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->post('pelamar/(:num)/geser', 'Applicants::move/$1');
     $routes->post('pelamar/(:num)/catatan', 'Applicants::addNote/$1');
     $routes->post('pelamar/(:num)/nilai', 'Applicants::rate/$1');
+    $routes->post('pelamar/(:num)/email', 'Applicants::sendEmail/$1');
+    $routes->post('pelamar/(:num)/mundur', 'Applicants::withdraw/$1');
 
     // Papan pipeline
     $routes->get('pipeline', 'Pipeline::index');
@@ -66,6 +68,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     // Penjadwalan interview & ubah status = aksi HR.
     $routes->get('interview/baru/(:num)', 'Interviews::create/$1');
     $routes->post('interview/baru/(:num)', 'Interviews::store/$1');
+    $routes->get('interview/(:num)/ubah', 'Interviews::edit/$1');
+    $routes->post('interview/(:num)/ubah', 'Interviews::updateInterview/$1');
     $routes->post('interview/(:num)/status', 'Interviews::setStatus/$1');
 
     }); // akhir grup HR penuh
@@ -106,6 +110,10 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
         $routes->get('pengaturan', 'Settings::index');
         $routes->post('pengaturan', 'Settings::update');
     });
+
+    // Pencarian global & bantuan (semua peran)
+    $routes->get('cari', 'Search::index');
+    $routes->get('bantuan', 'Help::index');
 
     // Profil sendiri (semua peran yang login)
     $routes->get('profil', 'Profile::index');
