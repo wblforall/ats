@@ -1,0 +1,33 @@
+# =============================================================================
+# Pelindung akar project.
+#
+# DocumentRoot XAMPP menunjuk ke htdocs, sehingga akar project ini bisa
+# diakses langsung lewat http://localhost/wbl-ats/. Tanpa berkas ini, .env,
+# .git/, composer.json, dan spark tersaji apa adanya ke siapa pun.
+#
+# Perbaikan yang benar untuk produksi adalah mengarahkan DocumentRoot / vhost
+# ke folder public/ project ini. Berkas ini adalah pertahanan berlapis: ia
+# mengalihkan seluruh permintaan ke public/ DAN memblokir berkas peka secara
+# eksplisit, sehingga tetap aman walau vhost belum diperbaiki.
+# =============================================================================
+
+# Blokir berkas & folder peka secara eksplisit (berlaku walau mod_rewrite mati).
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+<FilesMatch "(^\.|composer\.(json|lock)$|package\.json$|\.md$|^spark$|^env$|^preload\.php$|^builds$|phpunit.*)">
+    Require all denied
+</FilesMatch>
+
+# Tutup seluruh folder .git bila ikut ter-deploy.
+RedirectMatch 404 /\.git
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Arahkan semua permintaan ke public/, meniru perilaku bila DocumentRoot
+    # memang menunjuk ke public/. Permintaan yang sudah menyertakan public/
+    # dibiarkan agar tidak berputar.
+    RewriteCond %{REQUEST_URI} !^/wbl-ats/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
