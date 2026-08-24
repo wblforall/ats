@@ -42,6 +42,10 @@
 
             <button type="submit" class="btn btn-primary"><?= icon('logout') ?> Masuk</button>
         </form>
+
+        <p style="font-size:12.5px; text-align:center; margin-top:16px;">
+            <a href="<?= site_url('lupa-sandi') ?>">Lupa kata sandi?</a>
+        </p>
     </div>
 </body>
 </html>

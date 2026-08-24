@@ -24,6 +24,10 @@ $routes->post('lacak', 'Track::check');
 $routes->get('login', 'Auth::login', ['filter' => 'guest']);
 $routes->post('login', 'Auth::attempt', ['filter' => 'guest']);
 $routes->get('logout', 'Auth::logout');
+$routes->get('lupa-sandi', 'Auth::forgot', ['filter' => 'guest']);
+$routes->post('lupa-sandi', 'Auth::sendReset', ['filter' => 'guest']);
+$routes->get('reset/(:segment)', 'Auth::resetForm/$1', ['filter' => 'guest']);
+$routes->post('reset/(:segment)', 'Auth::resetSave/$1', ['filter' => 'guest']);
 
 /* ---------------------------------------------------------------------------
  | Area internal HR — semua wajib login
