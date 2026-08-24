@@ -26,7 +26,6 @@ Semua email ke pelamar tercatat dan terkirim melalui antrean.
 </tbody>
 </table>
 <div class="callout">Setiap data disaring per <b>unit usaha</b>. HR sebuah unit tidak pernah bisa melihat atau mengubah data unit lain.</div>
-<div class="pb"></div>
 
 <h2><div class="num">2</div> Portal Karir (Publik)</h2>
 <div class="rule"></div>
@@ -67,7 +66,6 @@ formulir berikut. Field bertanda wajib harus diisi.
 </table>
 ${ssOnly('ats_lamar', 'Formulir lamaran')}
 <div class="callout ok">Setelah mengirim, pelamar menerima <b>Nomor Lamaran</b> (mis. WBL-2026-000123) yang juga dikirim ke emailnya. Nomor ini adalah kunci untuk melacak status.</div>
-<div class="pb"></div>
 
 <h3>Melacak Status Lamaran</h3>
 <p style="text-align:justify">
@@ -84,7 +82,6 @@ Staf HRD masuk melalui halaman <b>Masuk</b> memakai email dan kata sandi akun ma
 Bila lupa sandi, gunakan tautan <b>Lupa kata sandi?</b> — tautan reset akan dikirim ke email terdaftar.
 </p>
 ${ssPair('ats_login', 'mob_ats_login', 'Halaman masuk (desktop)', 'Halaman masuk (mobile)')}
-<div class="pb"></div>
 
 <h2><div class="num">4</div> Dashboard</h2>
 <div class="rule"></div>
@@ -122,7 +119,6 @@ Halaman detail lowongan menampilkan ringkasan, sebaran pelamar per tahap, dan da
 </p>
 ${ssOnly('ats_lowongan_show', 'Detail lowongan dengan sebaran pelamar')}
 <div class="callout warn">Lowongan yang sudah punya pelamar tidak bisa dihapus — hanya <b>ditutup</b> — agar riwayat lamaran tetap utuh.</div>
-<div class="pb"></div>
 
 <h2><div class="num">6</div> Pipeline</h2>
 <div class="rule"></div>
@@ -158,7 +154,6 @@ ditandai <span class="b b-b">Awal</span> — agar profil semata tidak langsung t
 Band lainnya: <span class="b b-g">Tinggi</span> (&ge;75), <span class="b b-y">Sedang</span> (50&ndash;74), <span class="b b-gray">Rendah</span> (&lt;50).
 </p>
 ${ssOnly('ats_unggulan', 'Halaman kandidat unggulan')}
-<div class="pb"></div>
 
 <h2><div class="num">8</div> Pelamar</h2>
 <div class="rule"></div>
@@ -189,7 +184,6 @@ bukan unduh). Tombol <span class="btn-ref">Kirim Email</span> mengirim template 
 <span class="btn-ref">Mundur</span> menandai pelamar mengundurkan diri. HR juga bisa memberi rating
 bintang pada kartu Skor Potensi. Catatan internal dan riwayat tahap tercatat lengkap di bawah halaman.
 </p>
-<div class="pb"></div>
 
 <h2><div class="num">9</div> Interview</h2>
 <div class="rule"></div>
@@ -222,7 +216,6 @@ rekomendasi, serta catatan kelebihan dan kekurangan. Nilai akhir dihitung otomat
 diisi dan langsung menyegarkan rata-rata skor kandidat.
 </p>
 ${ssOnly('ats_penilaian', 'Formulir penilaian pewawancara')}
-<div class="pb"></div>
 
 <h2><div class="num">10</div> Kandidat (Bank Talenta)</h2>
 <div class="rule"></div>
@@ -249,7 +242,6 @@ penawaran, dsb.) yang dapat diubah. Isi memakai placeholder seperti <b>{{nama_ka
 </p>
 ${ssOnly('ats_email_template', 'Daftar template email')}
 <div class="callout">Pengiriman nyata memerlukan konfigurasi SMTP di berkas <b>.env</b>. Sebelum diatur, email tetap tersimpan aman di antrean.</div>
-<div class="pb"></div>
 
 <h2><div class="num">12</div> Laporan</h2>
 <div class="rule"></div>
