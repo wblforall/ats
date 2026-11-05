@@ -434,7 +434,8 @@ table.data.roomy td small { max-width: 260px; }
 /* Papan ringkas pipeline di dashboard */
 .stage-strip { display: flex; gap: 8px; overflow-x: auto; padding: 12px; }
 .stage-chip {
-    flex: 1 1 0; min-width: 120px;
+    /* 8 tahap harus muat di lebar dashboard biasa; lebih sempit baru bergeser. */
+    flex: 1 1 0; min-width: 96px;
     display: flex; flex-direction: column; justify-content: space-between;
     border: 1px solid var(--line); border-top-width: 3px;
     border-radius: 12px; padding: 12px 13px;
@@ -454,7 +455,8 @@ table.data.roomy td small { max-width: 260px; }
 .empty {
     text-align: center; padding: 48px 24px; color: var(--ink-soft);
 }
-.empty svg { width: 46px; height: 46px; color: var(--blue); opacity: .5; margin-bottom: 12px; }
+/* Hanya ikon besar di atas judul — ikon di dalam tombol aksi tetap kecil. */
+.empty > svg { width: 46px; height: 46px; color: var(--blue); opacity: .5; margin-bottom: 12px; }
 .empty b { color: var(--ink); font-size: 15px; }
 .empty .empty-sub { font-size: 13px; margin-top: 4px; }
 .empty .btn { margin-top: 18px; }
@@ -462,7 +464,7 @@ table.data.roomy td small { max-width: 260px; }
 .btn-cta-empty .ico { width: 16px; height: 16px; }
 /* Empty state di dalam kartu kecil (dashboard) lebih ringkas. */
 .empty.mini { padding: 30px 16px; }
-.empty.mini svg { width: 36px; height: 36px; }
+.empty.mini > svg { width: 36px; height: 36px; }
 
 /* --- Form ---------------------------------------------------------------- */
 

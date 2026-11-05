@@ -83,28 +83,30 @@ body {
 }
 .card.is-blue::after {
     content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-    background: url("../img/canopy-lines.svg") right -70px bottom -14px / 340px auto no-repeat;
-    opacity: .55;
-    /* Memudar ke arah teks supaya label & angka tetap bersih. */
-    -webkit-mask-image: linear-gradient(to left, #000 25%, transparent 70%);
-            mask-image: linear-gradient(to left, #000 25%, transparent 70%);
+    background: url("../img/canopy-lines.svg") right -36px top 14px / 230px auto no-repeat;
+    opacity: .5;
+    /* Di pojok kanan atas dan memudar ke kiri, menjauhi label, angka, & keterangan. */
+    -webkit-mask-image: linear-gradient(to left, #000 20%, transparent 62%);
+            mask-image: linear-gradient(to left, #000 20%, transparent 62%);
 }
 .card.is-blue .stat-value { color: var(--gold-hi); }
+/* Banner bertombol (sambutan dashboard): kanopi akan menimpa tombol, jadi tanpa hiasan. */
+.card.is-blue:has(.btn)::after { display: none; }
+.empty > svg { color: var(--ink-faint); opacity: .7; }
 
 .btn-primary { background: var(--blue); }
 .btn-primary:hover { background: var(--blue-deep); }
 .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
 a { color: var(--blue); }
 
-/* Pindah halaman: topbar & sidebar diam, hanya isi yang berganti. Sama
-   dengan portal karir, jadi perpindahan dari halaman masuk pun mulus. */
+/* Pindah halaman: crossfade seluruh halaman. Latar, topbar, dan sidebar
+   identik di tiap halaman, jadi yang tampak berganti hanya isinya.
+   Sengaja TANPA view-transition-name pada topbar/sidebar: elemen bernama
+   diangkat keluar dari kartu, sehingga sudut membulat kartu sempat hilang
+   (tampak kotak dulu lalu membulat). */
 @view-transition { navigation: auto; }
-.topbar  { view-transition-name: app-topbar; }
-.sidebar { view-transition-name: app-sidebar; }
-::view-transition-old(root) { animation: vt-out .15s ease both; }
-::view-transition-new(root) { animation: vt-in .3s cubic-bezier(.2, .7, .2, 1) both; }
-@keyframes vt-out { to { opacity: 0; } }
-@keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .22s; animation-timing-function: ease; }
 
 @media (prefers-reduced-motion: reduce) {
     ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
