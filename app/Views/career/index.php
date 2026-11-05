@@ -7,13 +7,6 @@
     <?php if (! empty($settings['career_intro'])): ?>
         <p class="rise" style="--d:.16s"><?= esc($settings['career_intro']) ?></p>
     <?php endif; ?>
-    <?php if ($allUnits !== []): ?>
-        <ul class="hero-units rise" style="--d:.24s" aria-label="Unit usaha">
-            <?php foreach ($allUnits as $unit): ?>
-                <li><b><?= esc($unit['code']) ?></b><?= esc($unit['name']) ?></li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
 </div>
 <?= $this->endSection() ?>
 

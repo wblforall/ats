@@ -75,19 +75,10 @@ class Career extends BaseController
             static fn (array $u) => in_array((int) $u['id'], array_map('intval', $unitAda), true)
         ));
 
-        /* Semua unit di bawah "satu atap" untuk hero, E-Walk sebelum Pentacity. */
-        $allUnits = model(UnitModel::class)->active();
-        usort($allUnits, static function (array $a, array $b): int {
-            $rank = static fn (array $u): int => match ($u['code']) { 'EWM' => 0, 'PTC' => 1, default => 2 };
-
-            return $rank($a) <=> $rank($b) ?: (int) $a['sort_order'] <=> (int) $b['sort_order'];
-        });
-
         return view('career/index', [
             'title'    => 'Karir',
             'jobs'     => $jobs->orderBy('jobs.published_at', 'DESC')->findAll(),
             'units'    => $units,
-            'allUnits' => $allUnits,
             'jenisAda' => $jenisAda,
             'flow'     => $flow,
             'filters'  => ['unit' => $unitId, 'tipe' => $type, 'q' => $q],

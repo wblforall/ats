@@ -17,7 +17,7 @@ class SettingSeeder extends Seeder
             'hr_email'           => 'hrd@wbl.co.id',
             'hr_phone'           => '',
             'career_tagline'     => 'Bergabunglah bersama kami',
-            'career_intro'       => 'Kami membuka kesempatan bagi Anda yang ingin tumbuh bersama unit usaha PT. Wulandari Bangun Laksana Tbk.',
+            'career_intro'       => 'Kami mengundang talenta terbaik untuk tumbuh dan berkarya bersama PT. Wulandari Bangun Laksana Tbk.',
             'cv_max_mb'          => '5',
             'cv_allowed_ext'     => 'pdf,doc,docx',
             'auto_email_on_apply' => '1',

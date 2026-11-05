@@ -96,17 +96,7 @@ body.public :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 
     text-wrap: balance;
 }
 .hero-home h1 em { font-style: normal; color: var(--wb-gold-hi); }
-.hero-home p { font-size: 15.5px; line-height: 1.65; max-width: 560px; }
-
-.hero-units {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px;
-    margin: 26px auto 0; max-width: 860px; padding: 0; list-style: none;
-}
-.hero-units li { font-size: 12.5px; color: rgba(255, 255, 255, .62); white-space: nowrap; }
-.hero-units b {
-    font-family: var(--display); font-stretch: 125%; font-weight: 800;
-    font-size: 11px; letter-spacing: .08em; color: var(--wb-gold-hi); margin-right: 6px;
-}
+.hero-home p { font-size: 15.5px; line-height: 1.65; max-width: 560px; text-wrap: balance; }
 
 /* Kotak cari menumpang di tepi bawah hero. */
 .search-card {
@@ -302,8 +292,6 @@ body.public { --rise-base: .05s; }
     .hero-home { padding: 30px 18px 96px; }
     .hero-home h1 { font-size: 34px; font-stretch: 108%; letter-spacing: -.03em; }
     .hero-home p { font-size: 14.5px; }
-    .hero-units { gap: 4px 12px; }
-    .hero-units li { font-size: 11.5px; }
     .search-card { grid-template-columns: 1fr; }
     .section-head { margin-top: 34px; }
     .section-head h2 { font-size: 21px; }
