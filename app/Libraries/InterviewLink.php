@@ -42,6 +42,24 @@ class InterviewLink
         return $aksi === '' ? $url : $url . '?aksi=' . $aksi;
     }
 
+    /**
+     * Placeholder email untuk satu jadwal: waktu, tempat, dan tombol jawaban.
+     * Satu sumber untuk undangan otomatis maupun email yang dikirim manual HR.
+     */
+    public static function placeholders(array $interview): array
+    {
+        helper('ui');
+        $at = $interview['scheduled_at'];
+
+        return [
+            'tanggal_interview' => tgl($at),
+            'jam_interview'     => date('H:i', strtotime($at)),
+            'lokasi'            => $interview['location'] ?: '-',
+            'link_meeting'      => $interview['meeting_link'] ?: '-',
+            'tombol_jawaban'    => self::buttonsHtml($interview),
+        ];
+    }
+
     /** Dua tombol untuk badan email; tabel + gaya inline supaya tampil di klien email mana pun. */
     public static function buttonsHtml(array $interview): string
     {

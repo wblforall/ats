@@ -255,7 +255,7 @@ class Interviews extends BaseController
         }
 
         if (! $this->canEvaluate($interviewId)) {
-            return redirect()->to(site_url('pelamar/' . $interview['application_id']))
+            return redirect()->to($this->afterEvaluation($interview))
                 ->with('error', 'Anda tidak ditugaskan menilai interview ini.');
         }
 
@@ -289,13 +289,24 @@ class Interviews extends BaseController
 
         /* submit() menghitung overall & menyegarkan rata-rata kandidat, lalu
            menandai jadwal ini selesai bila belum. */
-        model(EvaluationModel::class)->submit($interviewId, $this->auth['id'], $data, (int) $interview['application_id']);
+        $evaluations = model(EvaluationModel::class);
+        if (! $evaluations->submit($interviewId, $this->auth['id'], $data, (int) $interview['application_id'])) {
+            return redirect()->back()->withInput()->with('errors', $evaluations->errors() ?: ['Penilaian gagal disimpan.']);
+        }
         if ($interview['status'] === 'scheduled') {
             model(InterviewModel::class)->update($interviewId, ['status' => 'completed']);
         }
 
-        return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
+        return redirect()->to($this->afterEvaluation($interview))
             ->with('success', 'Penilaian disimpan.');
+    }
+
+    /** Pewawancara kembali ke agenda (halaman pelamar khusus HR); HR ke kartu interview pelamar. */
+    private function afterEvaluation(array $interview): string
+    {
+        return $this->isRole('interviewer')
+            ? site_url('interview')
+            : site_url('pelamar/' . $interview['application_id']) . '#interview';
     }
 
     /** Skala 1–5; kosong berarti aspek tak dinilai. */
@@ -330,15 +341,9 @@ class Interviews extends BaseController
     private function queueAndSend(string $template, array $interview, array $extra = []): string
     {
         $interview = model(InterviewModel::class)->withNonce($interview);
-        $at        = $interview['scheduled_at'];
         $queue     = new EmailQueue();
-        $outboxId = $queue->queueForApplication($template, (int) $interview['application_id'], $extra + [
-            'tanggal_interview' => tgl($at),
-            'jam_interview'     => date('H:i', strtotime($at)),
-            'lokasi'            => $interview['location'] ?: '-',
-            'link_meeting'      => $interview['meeting_link'] ?: '-',
-            'tombol_jawaban'    => InterviewLink::buttonsHtml($interview),
-        ], $this->auth['id']);
+        $outboxId  = $queue->queueForApplication($template, (int) $interview['application_id'],
+            $extra + InterviewLink::placeholders($interview), $this->auth['id']);
 
         if ($outboxId === null) {
             return ' Namun template email tidak aktif, jadi email tidak dibuat.';

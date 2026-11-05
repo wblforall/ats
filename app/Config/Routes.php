@@ -57,6 +57,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 
     // Pelamar (lamaran di sisi HR)
     $routes->get('pelamar', 'Applicants::index');
+    $routes->get('pelamar/baru', 'Applicants::create');
     $routes->get('pelamar/(:num)', 'Applicants::show/$1');
     $routes->post('pelamar/(:num)/geser', 'Applicants::move/$1');
     $routes->post('pelamar/(:num)/catatan', 'Applicants::addNote/$1');

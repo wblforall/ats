@@ -2,7 +2,11 @@
 <?= $this->section('content') ?>
 <div class="page-head">
     <div>
-        <a href="<?= site_url('pelamar/' . $interview['application_id']) ?>#interview" style="font-size:13px; color:var(--ink-soft);">← Kembali ke pelamar</a>
+        <?php if ($auth['role'] === 'interviewer'): ?>
+            <a href="<?= site_url('interview') ?>" style="font-size:13px; color:var(--ink-soft);">← Kembali ke agenda</a>
+        <?php else: ?>
+            <a href="<?= site_url('pelamar/' . $interview['application_id']) ?>#interview" style="font-size:13px; color:var(--ink-soft);">← Kembali ke pelamar</a>
+        <?php endif; ?>
         <h1 class="page-title" style="margin-top:8px;"><span class="chip"><?= icon('star') ?></span> Penilaian Interview</h1>
         <p class="page-sub"><?= esc($interview['full_name']) ?> · <?= esc($interview['job_title']) ?> · putaran <?= (int) $interview['round'] ?></p>
     </div>

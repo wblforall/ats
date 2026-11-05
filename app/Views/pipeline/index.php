@@ -9,11 +9,18 @@
             <span class="chip"><?= icon('pipeline') ?></span>
             Pipeline
         </h1>
-        <p class="page-sub"><?= $total ?> pelamar aktif · <?= esc($auth['unit_name']) ?></p>
+        <p class="page-sub">
+            <?= $total ?> pelamar aktif · <?= esc($auth['unit_name']) ?>
+            <?php if ($stageFilter): ?>
+                · tahap <b><?= esc($stageFilter['name']) ?></b>
+                · <a href="<?= site_url('pipeline' . ($jobId ? '?job=' . $jobId : '')) ?>">Tampilkan semua tahap</a>
+            <?php endif; ?>
+        </p>
     </div>
     <div class="spacer"></div>
     <?php if ($jobs !== []): ?>
         <form method="get" action="<?= site_url('pipeline') ?>">
+            <?php if ($stageFilter): ?><input type="hidden" name="stage" value="<?= esc($stageFilter['slug'], 'attr') ?>"><?php endif; ?>
             <select name="job" class="form-control" onchange="this.form.submit()" style="min-width:220px;">
                 <option value="">Semua lowongan</option>
                 <?php foreach ($jobs as $job): ?>

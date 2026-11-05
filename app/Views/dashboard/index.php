@@ -158,7 +158,7 @@ $belumMulai = $openJobCount === 0 && $activeTotal === 0 && $recent === [];
                 <?= empty_state('calendar', 'Tidak ada jadwal minggu ini', 'Jadwal interview 7 hari ke depan tampil di sini.', '', '', true) ?>
             <?php else: ?>
                 <?php foreach ($agenda as $iv): ?>
-                    <a href="<?= site_url('pelamar/' . $iv['application_id']) ?>" class="list-row">
+                    <a href="<?= $auth['role'] === 'interviewer' ? site_url('interview/' . $iv['id'] . '/nilai') : site_url('pelamar/' . $iv['application_id']) ?>" class="list-row">
                         <span class="day">
                             <b><?= date('d', strtotime($iv['scheduled_at'])) ?></b>
                             <small><?= strtoupper(substr(hari($iv['scheduled_at']), 0, 3)) ?></small>

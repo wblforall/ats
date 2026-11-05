@@ -44,10 +44,11 @@ class EmailTemplateModel extends Model
         return $this->where('code', $code)->where('is_active', 1)->first();
     }
 
+    /** Pilihan "Kirim Email" ke pelamar — tanpa template pemberitahuan untuk HR (berakhiran _hr). */
     public function activeOptions(): array
     {
         return array_column(
-            $this->where('is_active', 1)->orderBy('name', 'ASC')->findAll(),
+            $this->where('is_active', 1)->notLike('code', '_hr', 'before')->orderBy('name', 'ASC')->findAll(),
             'name',
             'code'
         );

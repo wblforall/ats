@@ -105,6 +105,9 @@ class EmailQueue
             'jam_interview'     => '-',
             'lokasi'            => '-',
             'link_meeting'      => '-',
+            // Terisi hanya untuk email jadwal; kosong agar tak tampil mentah.
+            'tombol_jawaban'    => '',
+            'pesan_hr'          => '',
         ];
     }
 

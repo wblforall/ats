@@ -16,14 +16,27 @@ class Pipeline extends BaseController
     {
         $unitId = $this->scopeUnitId();
         $jobId  = (int) $this->request->getGet('job');
+        $slug   = (string) $this->request->getGet('stage');
 
         $stages = model(StageModel::class)->active();
+
+        /* Dari kartu tahap di dashboard: papan hanya menampilkan tahap itu. */
+        $stageFilter = null;
+        foreach ($stages as $stage) {
+            if ($slug !== '' && $stage['slug'] === $slug) {
+                $stageFilter = $stage;
+            }
+        }
 
         $builder = model(ApplicationModel::class)->detailed()
             ->where('applications.status', 'active');
         $builder = model(ApplicationModel::class)->scopeUnit($builder, $unitId);
         if ($jobId) {
             $builder->where('applications.job_id', $jobId);
+        }
+        if ($stageFilter) {
+            $builder->where('applications.stage_id', $stageFilter['id']);
+            $stages = [$stageFilter];
         }
         $rows = $builder->orderBy('applications.applied_at', 'DESC')->findAll();
 
@@ -44,6 +57,7 @@ class Pipeline extends BaseController
             'total'   => count($rows),
             'jobs'    => model(JobModel::class)->withStats($unitId)->where('(SELECT COUNT(*) FROM applications a WHERE a.job_id = jobs.id AND a.deleted_at IS NULL) > 0', null, false)->orderBy('jobs.title', 'ASC')->findAll(),
             'jobId'   => $jobId,
+            'stageFilter' => $stageFilter,
         ]);
     }
 }

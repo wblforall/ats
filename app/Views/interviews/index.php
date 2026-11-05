@@ -41,7 +41,8 @@
             </thead>
             <tbody>
                 <?php foreach ($rows as $iv): ?>
-                    <tr data-href="<?= site_url('pelamar/' . $iv['application_id']) ?>#interview" tabindex="0" role="link">
+                    <?php /* Pewawancara tak membuka halaman pelamar (khusus HR): barisnya langsung ke form penilaian. */ ?>
+                    <tr data-href="<?= $auth['role'] === 'interviewer' ? site_url('interview/' . $iv['id'] . '/nilai') : site_url('pelamar/' . $iv['application_id']) . '#interview' ?>" tabindex="0" role="link">
                         <td>
                             <b><?= hari($iv['scheduled_at']) ?>, <?= tgl($iv['scheduled_at']) ?></b><br>
                             <small><?= date('H:i', strtotime($iv['scheduled_at'])) ?> WITA · putaran <?= (int) $iv['round'] ?></small>

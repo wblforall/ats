@@ -58,6 +58,25 @@ class Applicants extends BaseController
         ]);
     }
 
+    /**
+     * Input pelamar oleh HR (mis. pelamar walk-in atau berkas yang diserahkan
+     * langsung): pilih lowongan yang sedang tayang, lalu isi formulir lamaran
+     * yang sama dengan portal karir — satu jalur masuk, aturan & validasi sama.
+     */
+    public function create()
+    {
+        $jobs = model(JobModel::class)->published();
+        if (($unitId = $this->scopeUnitId()) !== null) {
+            $jobs->where('jobs.unit_id', $unitId);
+        }
+
+        return $this->render('applicants/create', [
+            'title'  => 'Input Pelamar',
+            'active' => 'apps',
+            'jobs'   => $jobs->orderBy('jobs.title', 'ASC')->findAll(),
+        ]);
+    }
+
     public function show(int $id)
     {
         $application = $this->findScoped($id);
@@ -204,8 +223,20 @@ class Applicants extends BaseController
             return redirect()->back()->with('error', 'Pilih template email lebih dulu.');
         }
 
+        /* Template interview yang dikirim manual: isi dengan jadwal terdekat
+           pelamar ini (waktu, tempat, tombol jawaban), bukan tanda "-". */
+        $extra    = [];
+        $upcoming = str_starts_with($code, 'interview_')
+            ? model(InterviewModel::class)->where('application_id', $id)->where('status', 'scheduled')
+                ->where('scheduled_at >=', date('Y-m-d H:i:s'))->orderBy('scheduled_at', 'ASC')->first()
+            : null;
+        if ($upcoming) {
+            $upcoming = model(InterviewModel::class)->withNonce($upcoming);
+            $extra    = \App\Libraries\InterviewLink::placeholders($upcoming);
+        }
+
         $queue    = new EmailQueue();
-        $outboxId = $queue->queueForApplication($code, $id, [], $this->auth['id']);
+        $outboxId = $queue->queueForApplication($code, $id, $extra, $this->auth['id']);
 
         if ($outboxId === null) {
             return redirect()->back()->with('error', 'Template tidak ditemukan atau nonaktif.');
@@ -216,6 +247,9 @@ class Applicants extends BaseController
             $pesan = 'Email masuk antrean; SMTP belum diatur jadi belum terkirim.';
         } elseif ($queue->sendNow($outboxId)) {
             $pesan = 'Email terkirim ke pelamar.';
+            if ($upcoming && $code === 'interview_invitation') {
+                model(InterviewModel::class)->update((int) $upcoming['id'], ['invited_at' => date('Y-m-d H:i:s')]);
+            }
         } else {
             $pesan = 'Email gagal terkirim dan menunggu di antrean.';
         }
