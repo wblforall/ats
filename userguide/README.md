@@ -17,8 +17,12 @@ Sumber & builder Panduan Pengguna PDF. Konfigurasi lengkap di `config.json`.
 php spark db:seed DemoSeeder          # dari root project
 # 2. Pasang dependensi (sekali saja)
 cd userguide && npm install
-# 3. Ambil screenshot
+# 3. Ambil screenshot. Skrip ini MENGUBAH data lokal: mengirim undangan
+#    interview dan menjalankan jawaban pelamar (jadwal ulang, hadir) lewat
+#    alur sebenarnya. Cadangkan DB dulu, pulihkan sesudahnya.
+mysqldump -uroot wbl_ats > /tmp/wbl_ats.sql
 npm run shots
+mysql -uroot wbl_ats < /tmp/wbl_ats.sql
 # 4. Build PDF -> ../docs/Panduan_Pengguna_WBL_ATS.pdf
 npm run build
 # 5. (opsional) kembalikan DB ke kondisi produksi

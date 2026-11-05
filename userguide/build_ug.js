@@ -101,7 +101,7 @@ body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
     <div class="sys">WBL ATS &middot; Applicant Tracking System</div>
     <div class="foot">
       <div class="co">Sistem Rekrutmen<small>Dokumentasi resmi untuk tim HRD</small></div>
-      <div class="ver">Versi 1.0<br>${tanggal}</div>
+      <div class="ver">Versi 1.1<br>${tanggal}</div>
     </div>
     <div class="credit">
       <div>Dikembangkan oleh <b>Ahmad Affan Ridha</b> &middot; Deputy Business &amp; People Development</div>
@@ -114,21 +114,21 @@ body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
 const CONTENT_CSS = `
 * { box-sizing: border-box; }
 body { font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:#1F2937; font-size:11.5px; line-height:1.6; margin:0; }
-h2 { page-break-before: always; display:flex; align-items:center; gap:10px; font-size:18px; color:#1E5099; margin:0 0 4px; }
+h2 { page-break-before: always; display:flex; align-items:center; gap:10px; font-size:18px; color:#153C7F; margin:0 0 4px; }
 h2:first-of-type { page-break-before: avoid; }
-h2 .num { width:30px; height:30px; flex:0 0 30px; background:#2D69CB; color:#fff; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; }
-h3 { font-size:13.5px; color:#2363C7; margin:18px 0 6px; }
-.rule { height:3px; background:linear-gradient(to right,#2D69CB,#E5EEFD); border-radius:3px; margin:4px 0 12px; }
+h2 .num { width:30px; height:30px; flex:0 0 30px; background:#153C7F; color:#E5B652; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; }
+h3 { font-size:13.5px; color:#0B1F45; margin:18px 0 6px; }
+.rule { height:3px; background:linear-gradient(to right,#C89023,#F3E3BF); border-radius:3px; margin:4px 0 12px; }
 p { margin:0 0 10px; }
 table { width:100%; border-collapse:collapse; margin:10px 0 14px; font-size:10.8px; page-break-inside:avoid; }
-th { background:#F1F5FE; color:#475569; text-align:left; padding:7px 10px; border:1px solid #E6E8F0; font-size:10px; text-transform:uppercase; letter-spacing:.4px; }
+th { background:#F3F6FB; color:#475569; text-align:left; padding:7px 10px; border:1px solid #E6E8F0; font-size:10px; text-transform:uppercase; letter-spacing:.4px; }
 td { padding:7px 10px; border:1px solid #E6E8F0; vertical-align:top; }
-.callout { background:#E5EEFD; border-left:3px solid #2D69CB; border-radius:6px; padding:10px 13px; margin:12px 0; font-size:11px; }
+.callout { background:#EEF2F9; border-left:3px solid #153C7F; border-radius:6px; padding:10px 13px; margin:12px 0; font-size:11px; }
 .callout.warn { background:#FEF3E2; border-left-color:#F59E0B; } .callout.ok { background:#E7F6EC; border-left-color:#16A34A; }
 .b { display:inline-block; padding:1px 8px; border-radius:999px; font-size:10px; font-weight:700; }
-.b-g{background:#E7F6EC;color:#15803D}.b-y{background:#FEF3E2;color:#B45309}.b-r{background:#FDE7E7;color:#B91C1C}.b-b{background:#E5EEFD;color:#1E5099}.b-gray{background:#EEF0F4;color:#64748B}
-.btn-ref{display:inline-block;background:#2D69CB;color:#fff;padding:1px 9px;border-radius:6px;font-size:10.5px;font-weight:600}
-.btn-ref-outline{display:inline-block;border:1px solid #DC2626;color:#DC2626;padding:1px 9px;border-radius:6px;font-size:10.5px;font-weight:600}
+.b-g{background:#E7F6EC;color:#15803D}.b-y{background:#FEF3E2;color:#B45309}.b-r{background:#FDE7E7;color:#B91C1C}.b-b{background:#E8EDF7;color:#153C7F}.b-gray{background:#EEF0F4;color:#64748B}
+.btn-ref{display:inline-block;background:#153C7F;color:#fff;padding:1px 9px;border-radius:6px;font-size:10.5px;font-weight:600}
+.btn-ref-outline{display:inline-block;border:1px solid #153C7F;color:#153C7F;padding:1px 9px;border-radius:6px;font-size:10.5px;font-weight:600}
 figure.ss{margin:12px 0;page-break-inside:avoid}
 figure.ss img{width:100%;border:1px solid #E6E8F0;border-radius:8px;display:block}
 figure.ss figcaption{font-size:9.5px;color:#9CA3AF;text-align:center;margin-top:5px;font-style:italic}

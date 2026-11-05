@@ -23,13 +23,17 @@
   "chromePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "chromePathNote": "Sesuaikan bila Chrome tidak di lokasi default macOS.",
   "recordIds": {
-    "note": "ID contoh untuk screenshot; sesuaikan bila data berubah. Butuh data demo terisi (php spark db:seed DemoSeeder).",
-    "publicJobSlug": "supervisor-housekeeping-ptc-2608-01",
-    "jobShowId": 6,
-    "applicantDetailId": 17,
-    "interviewEvaluateId": 1,
-    "trackRef": "WBL-2026-000012",
-    "trackEmail": "rizky.ramadhan@example.com"
+    "note": "ID contoh untuk screenshot dari data demo lokal (php spark db:seed DemoSeeder). Sesuaikan bila data berubah.",
+    "publicJobSlug": "supervisor-housekeeping-ptc-2611-02",
+    "jobShowId": 2,
+    "applicantDetailId": 4,
+    "interviewEvaluateId": 4,
+    "interviewRescheduleId": 1,
+    "interviewConfirmId": 2,
+    "rescheduleProposedDate": "2026-11-16",
+    "agendaFrom": "2026-11-01",
+    "trackRef": "WBL-2026-000004",
+    "trackEmail": "dewi.lestari@example.com"
   },
   "cover": {
     "theme": "Human Capital",
@@ -41,5 +45,11 @@
     "logoStrokePx": 9,
     "logoStrokeNote": "Regenerasi via make_logo_stroke.py (ubah GROW), lalu node build_ug.js. Butuh Pillow (pip install Pillow)."
   },
-  "dataNote": "Screenshot butuh data demo. Jalankan: php spark db:seed DemoSeeder. Setelah build, kembalikan DB ke kondisi produksi bila perlu."
+  "dataNote": "Screenshot butuh data demo (php spark db:seed DemoSeeder). retake_ats.js menjalankan alur jawaban interview sungguhan (undangan, jadwal ulang, hadir) sehingga data berubah — cadangkan DB sebelum npm run shots dan pulihkan sesudahnya.",
+  "mysql": {
+    "bin": "/Applications/XAMPP/xamppfiles/bin/mysql",
+    "user": "root",
+    "db": "wbl_ats",
+    "note": "Dipakai retake_ats.js untuk membaca tautan jawaban interview dari email_outbox. Skrip MENGUBAH data (kirim undangan, jawaban pelamar) — cadangkan DB dulu."
+  }
 }
