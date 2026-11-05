@@ -7,7 +7,7 @@
    publik, jadi aplikasi internal HR tidak ikut berubah.
    ========================================================================== */
 
-body.public {
+body.public, body.auth {
     --wb-navy:    #153C7F;
     --wb-night:   #0B1F45;
     --wb-deep:    #071633;
@@ -33,9 +33,10 @@ body.public {
     font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
 }
-body.public h1, body.public h2, body.public h3 { font-family: var(--display); }
-body.public .form-control:focus { border-color: var(--wb-navy); box-shadow: 0 0 0 3px rgba(21, 60, 127, .14); }
-body.public :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 2px; }
+body.public h1, body.public h2, body.public h3,
+body.auth h1, body.auth h2 { font-family: var(--display); }
+body.public .form-control:focus, body.auth .form-control:focus { border-color: var(--wb-navy); box-shadow: 0 0 0 3px rgba(21, 60, 127, .14); }
+body.public :focus-visible, body.auth :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 2px; }
 
 /* --- Header + kanopi ------------------------------------------------------ */
 
@@ -46,7 +47,7 @@ body.public :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 
     background:
         radial-gradient(120% 90% at 50% -12%, #1D4A9C 0%, var(--wb-night) 48%, var(--wb-deep) 100%);
 }
-.pub-header .canopy-hero {
+.pub-header .canopy-hero, .auth-side .canopy-hero {
     position: absolute; inset: 0; z-index: -1;
     width: 100%; height: 100%;
     pointer-events: none;
@@ -218,6 +219,55 @@ body.public :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 
 }
 .pub-foot .nofee svg { width: 16px; height: 16px; flex: 0 0 16px; margin-top: 3px; color: var(--wb-gold-hi); }
 
+/* --- Halaman masuk staf (login, lupa & reset sandi) ----------------------- */
+
+body.auth {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(420px, 1fr);
+    grid-template-rows: minmax(100vh, auto);
+    place-items: stretch; min-height: 100vh; padding: 0; background: #fff;
+}
+.auth-side {
+    position: relative; overflow: hidden; isolation: isolate;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 36px 52px 60px; color: #fff;
+    background: radial-gradient(120% 90% at 50% -12%, #1D4A9C 0%, var(--wb-night) 48%, var(--wb-deep) 100%);
+}
+.auth-side .canopy-hero { -webkit-mask-image: none; mask-image: none; }
+.auth-back { position: absolute; top: 30px; left: 52px; color: #F6DFA8; font-size: 13px; font-weight: 600; }
+.auth-side-copy h2 {
+    margin: 0 0 14px; font-weight: 800; font-stretch: 118%;
+    font-size: clamp(34px, 4.2vw, 58px); line-height: 1; letter-spacing: -.035em;
+}
+.auth-side-copy p { margin: 0; max-width: 420px; color: rgba(255, 255, 255, .72); font-size: 15px; line-height: 1.65; }
+
+.auth-main {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 48px 28px 28px;
+}
+body.auth .auth-card { max-width: 380px; padding: 0; background: transparent; box-shadow: none; border-radius: 0; margin: auto 0; }
+.auth-logo { display: block; height: 64px; width: auto; }
+body.auth .auth-card h1 {
+    margin: 26px 0 6px; color: var(--wb-ink);
+    font-size: 30px; font-weight: 800; font-stretch: 110%; letter-spacing: -.02em;
+}
+body.auth .auth-card p.lead { color: var(--wb-mute); font-size: 14px; line-height: 1.55; margin: 0 0 24px; }
+body.auth .form-control { padding: 12px 14px; border-radius: 12px; font-size: 14.5px; }
+body.auth .auth-card .btn { margin-top: 6px; padding: 13px; border-radius: 12px; font-size: 14.5px; font-weight: 700; }
+.auth-alt { text-align: center; font-size: 13px; margin: 18px 0 0; }
+.auth-alt a { color: var(--wb-navy); font-weight: 600; }
+.auth-foot { margin: 28px 0 0; font-size: 11.5px; color: var(--wb-mute); text-align: center; }
+
+@media (max-width: 860px) {
+    body.auth { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+    .auth-side { min-height: 230px; padding: 70px 22px 28px; }
+    .auth-back { top: 22px; left: 22px; }
+    .auth-side-copy h2 { font-size: 30px; font-stretch: 110%; }
+    .auth-side-copy p { font-size: 13.5px; }
+    .auth-main { padding: 30px 22px 22px; }
+    body.auth .auth-card h1 { margin-top: 20px; font-size: 26px; }
+    .auth-logo { height: 54px; }
+}
+
 /* --- Loading: kanopi digambar satu sapuan, logo asli menimpa, layar terangkat */
 
 .pub-loader { display: none; }
@@ -256,7 +306,7 @@ body.public :focus-visible { outline: 2px solid var(--wb-gold); outline-offset: 
 
 /* --- Masuknya halaman ----------------------------------------------------- */
 
-body.public { --rise-base: .05s; }
+body.public, body.auth { --rise-base: .05s; }
 .loader-on body.public { --rise-base: 1.8s; }
 .rise {
     opacity: 0; transform: translateY(16px);
