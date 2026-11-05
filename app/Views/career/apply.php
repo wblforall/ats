@@ -6,6 +6,7 @@
         <a href="<?= site_url('karir/' . $job['slug']) ?>" style="color:#fff; opacity:.85; font-size:13px;">← Kembali ke detail lowongan</a>
         <h1 style="margin-top:10px;">Formulir Lamaran</h1>
         <p style="margin:0;"><?= esc($job['title']) ?> · <?= esc($job['unit_name']) ?></p>
+        <p style="margin:10px 0 0; font-size:12.5px;">Field bertanda <span class="req">*</span> wajib diisi.</p>
     </div>
 </div>
 <?= $this->endSection() ?>
@@ -19,9 +20,6 @@ $errors = session()->getFlashdata('errors') ?? [];
 $wajib = '<span class="req" title="Wajib diisi">*</span>';
 ?>
 
-<p style="color:var(--ink-soft); font-size:13px; margin:0 0 16px;">
-    Field bertanda <span class="req">*</span> wajib diisi.
-</p>
 
 <?php if ($errors): ?>
     <div class="alert alert-error">

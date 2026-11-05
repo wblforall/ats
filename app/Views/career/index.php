@@ -1,121 +1,126 @@
 <?= $this->extend('layouts/public') ?>
 
 <?= $this->section('hero') ?>
-<div class="pub-hero">
-    <h1><?= esc($settings['career_tagline'] ?? 'Bergabunglah bersama kami') ?></h1>
-    <p><?= esc($settings['career_intro'] ?? '') ?></p>
+<div class="pub-hero hero-home">
+    <span class="hero-eyebrow rise"><?= esc($settings['career_tagline'] ?? 'Bergabunglah bersama kami') ?></span>
+    <h1 class="rise" style="--d:.08s" lang="en">Your future <em>starts here</em>.</h1>
+    <?php if (! empty($settings['career_intro'])): ?>
+        <p class="rise" style="--d:.16s"><?= esc($settings['career_intro']) ?></p>
+    <?php endif; ?>
+    <?php if ($allUnits !== []): ?>
+        <ul class="hero-units rise" style="--d:.24s" aria-label="Unit usaha">
+            <?php foreach ($allUnits as $unit): ?>
+                <li><b><?= esc($unit['code']) ?></b><?= esc($unit['name']) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
 </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 
-<div class="pub-panel">
-    <form method="get" action="<?= site_url('karir') ?>" class="pub-filters">
-        <div class="form-row">
-            <label for="q">Cari posisi</label>
-            <input type="search" id="q" name="q" class="form-control"
-                   value="<?= esc($filters['q']) ?>" placeholder="mis. teknisi, akuntansi">
-        </div>
+<?php $adaFilter = $filters['q'] !== '' || $filters['unit'] || $filters['tipe'] !== ''; ?>
 
-        <div class="form-row">
-            <label for="unit">Unit usaha</label>
-            <select id="unit" name="unit" class="form-control">
-                <option value="">Semua unit</option>
-                <?php foreach ($units as $unit): ?>
-                    <option value="<?= $unit['id'] ?>" <?= $filters['unit'] === (int) $unit['id'] ? 'selected' : '' ?>>
-                        <?= esc($unit['name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+<form method="get" action="<?= site_url('karir') ?>" class="search-card rise" style="--d:.32s" role="search">
+    <label>
+        <span>Posisi</span>
+        <input type="search" name="q" value="<?= esc($filters['q']) ?>" placeholder="mis. teknisi, akuntansi">
+    </label>
+    <label>
+        <span>Unit usaha</span>
+        <select name="unit">
+            <option value="">Semua unit</option>
+            <?php foreach ($units as $unit): ?>
+                <option value="<?= $unit['id'] ?>" <?= $filters['unit'] === (int) $unit['id'] ? 'selected' : '' ?>><?= esc($unit['name']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </label>
+    <label>
+        <span>Jenis</span>
+        <select name="tipe">
+            <option value="">Semua jenis</option>
+            <?php foreach (\App\Models\JobModel::EMPLOYMENT_TYPES as $key => $label): ?>
+                <?php if (in_array($key, $jenisAda, true)): ?>
+                    <option value="<?= $key ?>" <?= $filters['tipe'] === $key ? 'selected' : '' ?>><?= $label ?></option>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </select>
+    </label>
+    <button type="submit"><?= icon('search') ?> Cari</button>
+</form>
 
-        <div class="form-row">
-            <label for="tipe">Jenis</label>
-            <select id="tipe" name="tipe" class="form-control">
-                <option value="">Semua jenis</option>
-                <?php foreach (\App\Models\JobModel::EMPLOYMENT_TYPES as $key => $label): ?>
-                    <?php if (in_array($key, $jenisAda, true)): ?>
-                        <option value="<?= $key ?>" <?= $filters['tipe'] === $key ? 'selected' : '' ?>><?= $label ?></option>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary"><?= icon('search') ?> Cari</button>
-        <?php if ($filters['q'] !== '' || $filters['unit'] || $filters['tipe'] !== ''): ?>
-            <a href="<?= site_url('karir') ?>" class="btn btn-ghost">Reset</a>
-        <?php endif; ?>
-    </form>
+<div class="section-head rise" style="--d:.4s">
+    <h2>Lowongan dibuka</h2>
+    <?php if ($jobs !== []): ?>
+        <span class="count"><?= count($jobs) ?> posisi</span>
+    <?php endif; ?>
+    <?php if ($adaFilter): ?>
+        <a href="<?= site_url('karir') ?>" class="reset">Hapus saringan</a>
+    <?php endif; ?>
 </div>
 
-<div style="display:flex; align-items:baseline; gap:10px; margin: 26px 2px 12px;">
-    <h2 style="font-size:16px; margin:0; color:var(--ink);">
-        <?= count($jobs) ?> lowongan tersedia
-    </h2>
-</div>
-
-<?php if ($jobs === []): ?>
-    <div class="pub-panel">
-        <?php $adaFilter = $filters['q'] !== '' || $filters['unit'] || $filters['tipe'] !== ''; ?>
-        <div class="empty">
-            <?= icon('briefcase') ?>
+<div class="job-list rise" style="--d:.46s">
+    <?php if ($jobs === []): ?>
+        <div class="job-empty">
+            <?= view('partials/canopy', ['variant' => 'mini']) ?>
             <?php if ($adaFilter): ?>
-                <div><b>Tidak ada lowongan yang cocok.</b></div>
-                <div style="margin-top:4px;">Coba ubah kata kunci atau saringan.</div>
+                <b>Tidak ada lowongan yang cocok.</b>
+                <p>Coba kata kunci lain, atau tampilkan semua unit dan jenis pekerjaan.</p>
+                <a href="<?= site_url('karir') ?>">Tampilkan semua lowongan →</a>
             <?php else: ?>
-                <div><b>Belum ada lowongan yang dibuka.</b></div>
-                <div style="margin-top:4px;">Silakan cek kembali lain waktu.</div>
+                <b>Belum ada lowongan dibuka saat ini.</b>
+                <p>Lowongan baru dari seluruh unit usaha WBL diumumkan di halaman ini begitu dibuka.</p>
+                <a href="<?= site_url('lacak') ?>">Sudah melamar? Lacak lamaran →</a>
             <?php endif; ?>
         </div>
-    </div>
-<?php else: ?>
-    <div class="grid grid-2">
+    <?php else: ?>
         <?php foreach ($jobs as $job): ?>
-            <a href="<?= site_url('karir/' . $job['slug']) ?>" class="job-card">
-                <h3><?= esc($job['title']) ?></h3>
-                <div style="color:var(--ink-soft); font-size:13px;">
-                    <?= esc($job['unit_name']) ?><?= $job['department'] ? ' · ' . esc($job['department']) : '' ?>
-                </div>
-
-                <div class="meta">
-                    <span class="badge badge-blue"><?= \App\Models\JobModel::EMPLOYMENT_TYPES[$job['employment_type']] ?></span>
-                    <?php if ($job['work_location']): ?>
-                        <span class="badge badge-gray"><?= esc($job['work_location']) ?></span>
-                    <?php endif; ?>
-                    <?php if ((int) $job['openings'] > 1): ?>
-                        <span class="badge badge-gray"><?= (int) $job['openings'] ?> posisi</span>
-                    <?php endif; ?>
-                    <?php if ($job['salary_visible'] && $job['salary_min']): ?>
-                        <span class="badge badge-green"><?= rupiah((float) $job['salary_min']) ?>+</span>
-                    <?php endif; ?>
-                </div>
-
-                <?php if ($job['description']): ?>
-                    <p class="excerpt"><?= esc(mb_substr(strip_tags($job['description']), 0, 160)) ?></p>
-                <?php endif; ?>
-
-                <div style="display:flex; align-items:center; gap:6px; margin-top:12px; font-size:12px; color:var(--ink-faint);">
-                    <?= icon('clock') ?>
+            <a href="<?= site_url('karir/' . $job['slug']) ?>" class="job-row">
+                <span class="plate" title="<?= esc($job['unit_name']) ?>"><?= esc($job['unit_code'] ?: 'WBL') ?></span>
+                <span>
+                    <span class="jr-title"><?= esc($job['title']) ?></span>
+                    <span class="jr-sub"><?= esc($job['unit_name']) ?><?= $job['department'] ? ' · ' . esc($job['department']) : '' ?></span>
+                    <span class="jr-chips">
+                        <span><?= \App\Models\JobModel::EMPLOYMENT_TYPES[$job['employment_type']] ?></span>
+                        <?php if ($job['work_location']): ?><span><?= esc($job['work_location']) ?></span><?php endif; ?>
+                        <?php if ((int) $job['openings'] > 1): ?><span><?= (int) $job['openings'] ?> orang</span><?php endif; ?>
+                        <?php if ($job['salary_visible'] && $job['salary_min']): ?><span class="pay"><?= rupiah((float) $job['salary_min']) ?>+</span><?php endif; ?>
+                    </span>
+                </span>
+                <span class="jr-end">
                     <?php if ($job['closing_date']): ?>
-                        Ditutup <?= tgl($job['closing_date']) ?>
+                        <small>Ditutup</small><b><?= tgl($job['closing_date']) ?></b>
                     <?php else: ?>
-                        Dibuka <?= sejak($job['published_at']) ?>
+                        <small>Dibuka</small><b><?= sejak($job['published_at']) ?></b>
                     <?php endif; ?>
-                </div>
+                </span>
+                <span class="jr-arrow" aria-hidden="true">→</span>
             </a>
         <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
+<?php if ($flow !== []): ?>
+    <div class="section-head">
+        <h2>Tahapan seleksi</h2>
     </div>
+    <div class="pub-panel">
+        <ol class="stages">
+            <?php foreach ($flow as $stage): ?>
+                <li><b><?= esc($stage['name']) ?></b></li>
+            <?php endforeach; ?>
+            <li class="end"><b>Bergabung</b></li>
+        </ol>
+    </div>
+    <p class="stages-note">Setelah melamar, Anda bisa memantau tahap yang sedang berjalan kapan saja lewat Lacak Lamaran.</p>
 <?php endif; ?>
 
 <div class="cta-band">
     <div>
-        <h2>Sudah pernah melamar?</h2>
-        <p>
-            Pantau sampai mana proses lamaran Anda memakai nomor lamaran dan email
-            yang Anda terima. Tidak perlu membuat akun.
-        </p>
+        <h2>Sudah melamar?</h2>
+        <p>Masukkan nomor lamaran dan email Anda untuk melihat tahap seleksi saat ini. Tidak perlu membuat akun.</p>
     </div>
-    <a href="<?= site_url('lacak') ?>" class="btn"><?= icon('search') ?> Lacak Lamaran</a>
+    <a href="<?= site_url('lacak') ?>" class="btn"><?= icon('search') ?> Lacak lamaran</a>
 </div>
 
 <?= $this->endSection() ?>

@@ -71,7 +71,7 @@ class JobModel extends Model
      */
     public function published()
     {
-        return $this->select('jobs.*, units.name AS unit_name, departments.name AS department')
+        return $this->select('jobs.*, units.name AS unit_name, units.code AS unit_code, departments.name AS department')
             ->join('units', 'units.id = jobs.unit_id', 'left')
             ->join('departments', 'departments.id = jobs.department_id', 'left')
             ->where('jobs.status', 'open')
