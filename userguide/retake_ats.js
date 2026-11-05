@@ -138,6 +138,7 @@ async function noLoader(page) {
   await goto(pg, 'pipeline');                                 await s('ats_pipeline');
   await goto(pg, 'unggulan');                                 await s('ats_unggulan');
   await goto(pg, 'pelamar');                                  await s('ats_pelamar_list');
+  await goto(pg, 'pelamar/baru');                             await s('ats_input_pelamar');
   await goto(pg, `pelamar/${IDS.applicantDetailId}`);         await s('ats_pelamar_detail');
   await shotEl(pg, 'ats_pelamar_jadwal_ulang', '#interview');
   await goto(pg, `interview/baru/${IDS.applicantDetailId}`);  await s('ats_interview_form');

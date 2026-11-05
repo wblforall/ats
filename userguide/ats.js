@@ -23,7 +23,7 @@ tercatat dan terkirim melalui antrean.
 <tr><td><b>Super Admin</b></td><td>Akses seluruh unit dan semua menu. Satu-satunya yang bisa mengelola Unit Usaha dan memberi peran Super Admin.</td></tr>
 <tr><td><b>Admin HRD</b></td><td>Kelola lowongan, pelamar, interview, email, laporan, departemen, tahapan, pengguna (di unitnya), dan pengaturan. Tahapan dan Pengaturan berlaku untuk seluruh unit.</td></tr>
 <tr><td><b>Staf HRD</b></td><td>Kelola lowongan dan pelamar, geser tahap, jadwalkan interview, tindak lanjuti jawaban pelamar. Tidak membuka menu Email, Laporan, dan Master Data; tidak bisa mengirim email manual atau memblacklist kandidat.</td></tr>
-<tr><td><b>Pewawancara</b></td><td>Hanya melihat Dashboard dan agenda interview yang ditugaskan kepadanya.</td></tr>
+<tr><td><b>Pewawancara</b></td><td>Hanya melihat Dashboard dan agenda interview yang ditugaskan kepadanya, lalu mengisi penilaian untuk jadwal itu.</td></tr>
 </tbody>
 </table>
 <div class="callout">Setiap data disaring per <b>unit usaha</b>. HR sebuah unit tidak bisa melihat atau mengubah data unit lain. Super Admin melihat semua unit.</div>
@@ -131,8 +131,9 @@ halaman Bantuan.
 Dashboard menyajikan ringkasan rekrutmen: <b>Pelamar Aktif</b>, <b>Lamaran Bulan Ini</b>,
 <b>Lowongan Dibuka</b>, dan <b>Diterima Tahun Ini</b>. Di bawahnya terdapat deret <b>Pipeline</b>
 (jumlah pelamar per tahap), <b>Pelamar Terbaru</b>, <b>Agenda Interview 7 Hari</b> (hingga 6 jadwal
-terdekat), dan <b>Lowongan Paling Ramai</b>. Tombol <span class="btn-ref">Lowongan Baru</span> ada di
-kanan atas dan di sidebar.
+terdekat), dan <b>Lowongan Paling Ramai</b>. Di kanan atas ada tombol
+<span class="btn-ref-outline">Input Pelamar</span> (lihat Bab 8) dan <span class="btn-ref">Lowongan Baru</span>.
+Klik salah satu kartu tahap di deret Pipeline untuk membuka papan Pipeline yang tersaring ke tahap itu.
 </p>
 ${ssPair('ats_dashboard', 'mob_ats_dashboard', 'Dashboard (desktop)', 'Dashboard di ponsel')}
 <h3>Kartu Jawaban Pelamar</h3>
@@ -227,6 +228,18 @@ Tombol <span class="btn-ref-outline">Lihat Papan Pipeline</span> membuka tampila
 baris untuk membuka detail pelamar.
 </p>
 ${ssOnly('ats_pelamar_list', 'Daftar pelamar')}
+
+<h3>Input Pelamar oleh HR</h3>
+<p style="text-align:justify">
+Untuk pelamar yang datang langsung atau menyerahkan berkas ke HRD, klik
+<span class="btn-ref-outline">Input Pelamar</span> di Dashboard. Halaman ini mendaftar lowongan yang sedang
+tayang; klik <span class="btn-ref">Isi Formulir</span> pada lowongan yang dituju, lalu isi formulir lamaran
+yang sama dengan portal karir (termasuk unggah CV) atas nama pelamar. Lamaran langsung masuk ke tahap
+pertama pipeline dan nomor lamarannya tampil di layar.
+</p>
+${ssOnly('ats_input_pelamar', 'Input Pelamar: pilih lowongan')}
+<div class="callout">Pelamar hanya bisa diinput ke lowongan berstatus <b>Dibuka</b>. Bila belum ada, halaman ini mengarahkan ke <span class="btn-ref">Buat Lowongan</span>.</div>
+
 <p style="text-align:justify">
 Halaman detail pelamar adalah pusat kerja HR. Isinya: <b>Tahap Saat Ini</b>, <b>Jadwal Interview</b>,
 <b>Catatan Internal</b>, <b>Riwayat Tahap</b>, kartu <b>Skor Potensi</b> dengan rincian komponen dan
@@ -249,7 +262,8 @@ gugur.
 <p style="text-align:justify">
 Tombol <span class="btn-ref">Lihat CV</span> membuka CV di tab peramban (pratinjau, bukan unduh).
 <span class="btn-ref">Kirim Email</span> (khusus Admin HRD dan Super Admin) membuka pilihan
-<b>Pilih template</b> dan tombol <span class="btn-ref">Kirim Sekarang</span>.
+<b>Pilih template</b> dan tombol <span class="btn-ref">Kirim Sekarang</span>. Template interview yang dikirim
+dari sini otomatis berisi jadwal terdekat pelamar beserta tombol jawabannya.
 <span class="btn-ref-outline">Mundur</span> menandai pelamar mengundurkan diri dengan
 <b>Alasan (opsional)</b> lalu <span class="btn-ref">Tandai Mundur</span>. Catatan ditambahkan lewat
 <span class="btn-ref">Tambah Catatan</span>; jawaban pelamar atas undangan interview dan keputusan HR
@@ -329,12 +343,15 @@ ${ssOnly('ats_interview_ubah_usulan', 'Form ubah jadwal terisi usulan pelamar')}
 
 <h3>Penilaian Pewawancara</h3>
 <p style="text-align:justify">
-Penilaian diisi lewat tombol <span class="btn-ref-outline">Isi Penilaian</span> pada kartu interview.
+<b>Pewawancara</b> membuka menu <b>Interview</b> (atau Agenda Interview di Dashboard) dan mengklik baris
+jadwal yang ditugaskan kepadanya — form penilaian langsung terbuka. HR membuka form yang sama lewat
+tombol <span class="btn-ref-outline">Isi Penilaian</span> pada kartu interview di halaman pelamar.
 Ada lima aspek skala 1&ndash;5 — <b>Kemampuan Teknis</b>, <b>Komunikasi</b>, <b>Sikap &amp;
 Kedisiplinan</b>, <b>Pengalaman Relevan</b>, <b>Kecocokan Budaya</b> — lalu <b>Rekomendasi</b> (Sangat
 Direkomendasikan hingga Sangat Tidak Direkomendasikan), kelebihan, kekurangan, dan <b>Catatan Lain</b>.
 Klik <span class="btn-ref">Simpan Penilaian</span>: nilai akhir dihitung dari aspek yang diisi,
-rata-rata skor kandidat diperbarui, dan jadwal otomatis ditandai <b>Selesai</b>.
+rata-rata skor kandidat diperbarui, dan jadwal otomatis ditandai <b>Selesai</b>. Pewawancara kemudian
+kembali ke agenda; HR kembali ke halaman pelamar.
 </p>
 ${ssOnly('ats_penilaian', 'Formulir penilaian pewawancara')}
 
