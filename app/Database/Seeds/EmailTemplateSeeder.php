@@ -8,7 +8,7 @@ use CodeIgniter\Database\Seeder;
  * Template email standar HR. Placeholder yang dikenali:
  *   {{nama_kandidat}} {{posisi}} {{unit}} {{perusahaan}} {{kode_lamaran}}
  *   {{tanggal_interview}} {{jam_interview}} {{lokasi}} {{link_meeting}}
- *   {{nama_hr}} {{kontak_hr}}
+ *   {{nama_hr}} {{kontak_hr}} {{tombol_jawaban}} (tombol Hadir / Minta Jadwal Ulang)
  * Hanya `application_received` yang auto_send — sisanya dikirim manual supaya
  * HR sempat memeriksa isinya sebelum sampai ke pelamar.
  */
@@ -39,7 +39,7 @@ class EmailTemplateSeeder extends Seeder
                 'interview_invitation',
                 'Undangan Interview',
                 'Undangan interview posisi {{posisi}} di {{perusahaan}}',
-                "<p>Halo {{nama_kandidat}},</p>\n<p>Selamat! Berkas Anda lolos seleksi untuk posisi <b>{{posisi}}</b>. Kami mengundang Anda mengikuti wawancara pada:</p>\n<p><b>Hari/Tanggal:</b> {{tanggal_interview}}<br><b>Waktu:</b> {{jam_interview}} WITA<br><b>Tempat:</b> {{lokasi}}<br><b>Tautan daring:</b> {{link_meeting}}</p>\n<p>Mohon membawa CV, fotokopi KTP, dan ijazah terakhir. Konfirmasi kehadiran Anda dengan membalas email ini.</p>\n<p>Salam,<br>{{nama_hr}}<br>HRD {{perusahaan}} — {{kontak_hr}}</p>",
+                "<p>Halo {{nama_kandidat}},</p>\n<p>Selamat! Berkas Anda lolos seleksi untuk posisi <b>{{posisi}}</b>. Kami mengundang Anda mengikuti wawancara pada:</p>\n<p><b>Hari/Tanggal:</b> {{tanggal_interview}}<br><b>Waktu:</b> {{jam_interview}} WITA<br><b>Tempat:</b> {{lokasi}}<br><b>Tautan daring:</b> {{link_meeting}}</p>\n<p>Mohon membawa CV, fotokopi KTP, dan ijazah terakhir. Mohon konfirmasi kehadiran Anda lewat tombol di bawah ini. Bila berhalangan, Anda dapat meminta jadwal ulang paling lambat H-1.</p>\n{{tombol_jawaban}}\n<p>Salam,<br>{{nama_hr}}<br>HRD {{perusahaan}} — {{kontak_hr}}</p>",
                 'Undangan wawancara; isi tanggal & tempat terisi dari jadwal interview.',
                 0,
             ],
@@ -47,7 +47,7 @@ class EmailTemplateSeeder extends Seeder
                 'interview_reminder',
                 'Pengingat Jadwal Interview',
                 'Pengingat: interview {{posisi}} pada {{tanggal_interview}}',
-                "<p>Halo {{nama_kandidat}},</p>\n<p>Mengingatkan jadwal wawancara Anda untuk posisi <b>{{posisi}}</b>:</p>\n<p><b>Hari/Tanggal:</b> {{tanggal_interview}}<br><b>Waktu:</b> {{jam_interview}} WITA<br><b>Tempat:</b> {{lokasi}}<br><b>Tautan daring:</b> {{link_meeting}}</p>\n<p>Bila berhalangan, mohon kabari kami sesegera mungkin.</p>\n<p>Salam,<br>{{nama_hr}}<br>HRD {{perusahaan}}</p>",
+                "<p>Halo {{nama_kandidat}},</p>\n<p>Mengingatkan jadwal wawancara Anda untuk posisi <b>{{posisi}}</b>:</p>\n<p><b>Hari/Tanggal:</b> {{tanggal_interview}}<br><b>Waktu:</b> {{jam_interview}} WITA<br><b>Tempat:</b> {{lokasi}}<br><b>Tautan daring:</b> {{link_meeting}}</p>\n<p>Bila belum, mohon konfirmasi kehadiran Anda lewat tombol di bawah ini.</p>\n{{tombol_jawaban}}\n<p>Salam,<br>{{nama_hr}}<br>HRD {{perusahaan}}</p>",
                 'Dikirim H-1 sebelum jadwal wawancara.',
                 0,
             ],
@@ -76,6 +76,10 @@ class EmailTemplateSeeder extends Seeder
                 0,
             ],
         ];
+
+        foreach (InterviewResponseTemplates::all() as $tpl) {
+            $templates[] = [...$tpl, 0];
+        }
 
         foreach ($templates as [$code, $name, $subject, $body, $desc, $auto]) {
             $this->db->table('email_templates')->ignore(true)->insert([

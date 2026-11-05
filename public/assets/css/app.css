@@ -677,6 +677,15 @@ body.public { background: #F6F8FC; }
     .pub-nav a { padding: 7px 10px; font-size: 12.5px; }
     .pub-panel { padding: 16px; }
 }
+/* HP: nama perusahaan sudah tertulis di logo, jadi teksnya disembunyikan
+   supaya menu muat dan halaman tidak tergeser ke samping. */
+@media (max-width: 600px) {
+    .pub-header .bar { gap: 8px; padding: 12px 16px; }
+    .pub-brand .brand-plate img { height: 42px; }
+    .pub-brand > span:not(.brand-plate) { display: none; }
+    .pub-nav { gap: 4px; }
+    .pub-nav a { padding: 6px 9px; white-space: nowrap; }
+}
 
 
 /* --- Beranda: alur rekrutmen & ajakan melacak -----------------------------

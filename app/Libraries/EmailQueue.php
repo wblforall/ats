@@ -40,14 +40,45 @@ class EmailQueue
 
         $values = array_merge($this->baseValues($application, $userId), $extra);
 
+        /* Tombol jawaban interview wajib sampai ke pelamar, juga bila HR
+           menyunting template dan menghapus placeholder-nya. */
+        $body = $template['body'];
+        if (isset($extra['tombol_jawaban']) && ! str_contains($body, '{{tombol_jawaban}}')) {
+            $body .= "\n{{tombol_jawaban}}";
+        }
+
         return model(EmailOutboxModel::class)->queue([
             'application_id' => $applicationId,
             'template_code'  => $templateCode,
             'to_email'       => $application['email'],
             'to_name'        => $application['full_name'],
             'subject'        => $this->fill($template['subject'], $values),
-            'body'           => $this->fill($template['body'], $values),
+            'body'           => $this->fill($body, $values),
             'created_by'     => $userId,
+        ]);
+    }
+
+    /**
+     * Seperti queueForApplication(), tapi penerimanya staf HR (mis. pemberitahuan
+     * permintaan jadwal ulang), bukan pelamar. Placeholder lamaran tetap tersedia.
+     */
+    public function queueForStaff(string $templateCode, int $applicationId, string $toEmail, string $toName, array $extra = []): ?int
+    {
+        $template    = model(EmailTemplateModel::class)->findByCode($templateCode);
+        $application = model(ApplicationModel::class)->findDetailed($applicationId);
+        if (! $template || ! $application || $toEmail === '') {
+            return null;
+        }
+
+        $values = array_merge($this->baseValues($application), ['nama_penerima' => $toName], $extra);
+
+        return model(EmailOutboxModel::class)->queue([
+            'application_id' => $applicationId,
+            'template_code'  => $templateCode,
+            'to_email'       => $toEmail,
+            'to_name'        => $toName,
+            'subject'        => $this->fill($template['subject'], $values),
+            'body'           => $this->fill($template['body'], $values),
         ]);
     }
 

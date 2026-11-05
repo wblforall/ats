@@ -66,6 +66,7 @@ class Dashboard extends BaseController
             'hiredStage'  => $hiredStage[0] ?? null,
             'recent'      => $recent,
             'agenda'      => array_slice($agenda, 0, 6),
+            'reschedules' => $this->isRole('interviewer') ? [] : model(InterviewModel::class)->needingAttention($unitId),
             'openJobs'    => $jobs->withStats($unitId)->where('jobs.status', 'open')
                 ->orderBy('applicant_count', 'DESC')->findAll(5),
         ]);

@@ -133,7 +133,26 @@ $belumMulai = $openJobCount === 0 && $activeTotal === 0 && $recent === [];
     </div>
 
     <div>
-        <div class="section-title" style="margin-top:0;">Agenda Interview 7 Hari</div>
+        <?php if ($reschedules !== []): ?>
+            <div class="section-title" style="margin-top:0;">Jawaban Pelamar <span class="badge badge-amber"><?= count($reschedules) ?></span></div>
+            <div class="card" style="padding: 6px; margin-bottom:18px;">
+                <?php foreach ($reschedules as $rq): ?>
+                    <a href="<?= site_url('pelamar/' . $rq['application_id']) ?>#interview" class="list-row">
+                        <span class="body">
+                            <b><?= esc($rq['full_name']) ?></b>
+                            <?php if ($rq['response_status'] === 'canceled_by_candidate'): ?>
+                                <small>Batal hadir · jadwal <?= tgl($rq['scheduled_at'], true) ?> WITA</small>
+                            <?php else: ?>
+                                <small><?= tgl($rq['scheduled_at'], true) ?> → <?= tgl($rq['reschedule_proposed_at'], true) ?> WITA</small>
+                            <?php endif; ?>
+                        </span>
+                        <span class="badge <?= \App\Models\InterviewModel::RESPONSE_BADGES[$rq['response_status']] ?>"><?= $rq['response_status'] === 'canceled_by_candidate' ? 'Dibatalkan' : 'Tinjau' ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="section-title"<?= $reschedules === [] ? ' style="margin-top:0;"' : '' ?>>Agenda Interview 7 Hari</div>
         <div class="card" style="padding: 6px;">
             <?php if ($agenda === []): ?>
                 <?= empty_state('calendar', 'Tidak ada jadwal minggu ini', 'Jadwal interview 7 hari ke depan tampil di sini.', '', '', true) ?>
@@ -148,7 +167,11 @@ $belumMulai = $openJobCount === 0 && $activeTotal === 0 && $recent === [];
                             <b><?= esc($iv['full_name']) ?></b>
                             <small><?= esc($iv['job_title']) ?> · <?= date('H:i', strtotime($iv['scheduled_at'])) ?> WITA</small>
                         </span>
-                        <span class="badge badge-blue"><?= esc(\App\Models\InterviewModel::MODES[$iv['mode']] ?? $iv['mode']) ?></span>
+                        <?php if (\App\Models\InterviewModel::showsResponse($iv)): ?>
+                            <span class="badge <?= \App\Models\InterviewModel::RESPONSE_BADGES[$iv['response_status']] ?>"><?= \App\Models\InterviewModel::RESPONSES[$iv['response_status']] ?></span>
+                        <?php else: ?>
+                            <span class="badge badge-blue"><?= esc(\App\Models\InterviewModel::MODES[$iv['mode']] ?? $iv['mode']) ?></span>
+                        <?php endif; ?>
                     </a>
                 <?php endforeach; ?>
             <?php endif; ?>

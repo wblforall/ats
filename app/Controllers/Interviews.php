@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Libraries\EmailQueue;
+use App\Libraries\InterviewLink;
+use App\Models\ApplicationNoteModel;
 use App\Models\ApplicationModel;
 use App\Models\InterviewModel;
 use App\Models\EvaluationModel;
@@ -82,7 +84,7 @@ class Interviews extends BaseController
             'meeting_link'   => $this->request->getPost('meeting_link') ?: null,
             'status'         => 'scheduled',
             'created_by'     => $this->auth['id'],   // siapa yang menjadwalkan
-        ];
+        ] + InterviewModel::freshResponse();
 
         if (! $interviews->insert($data)) {
             return redirect()->back()->withInput()->with('errors', $interviews->errors());
@@ -100,28 +102,10 @@ class Interviews extends BaseController
         model(InterviewParticipantModel::class)->sync($interviewId, $dipilih);
 
         /* Undangan ke pelamar. Diminta: langsung dikirim begitu jadwal
-           disimpan, bukan sekadar diantrekan. Tetap dicatat di antrean lebih
-           dulu (jejak & bisa kirim ulang), lalu dikirim seketika. */
-        $pesanEmail = '';
-        if ($this->request->getPost('kirim_undangan')) {
-            $queue = new EmailQueue();
-            $outboxId = $queue->queueForApplication('interview_invitation', $applicationId, [
-                'tanggal_interview' => $scheduledAt ? tgl($scheduledAt) : '-',
-                'jam_interview'     => $scheduledAt ? date('H:i', strtotime($scheduledAt)) : '-',
-                'lokasi'            => $data['location'] ?: '-',
-                'link_meeting'      => $data['meeting_link'] ?: '-',
-            ], $this->auth['id']);
-
-            if ($outboxId === null) {
-                $pesanEmail = ' Namun template undangan tidak aktif, jadi email tidak dibuat.';
-            } elseif (! $queue->smtpReady()) {
-                $pesanEmail = ' Undangan tersimpan di antrean, tapi SMTP belum diatur — belum terkirim.';
-            } elseif ($queue->sendNow($outboxId)) {
-                $pesanEmail = ' Undangan langsung dikirim ke pelamar.';
-            } else {
-                $pesanEmail = ' Undangan gagal terkirim dan menunggu di antrean untuk dikirim ulang.';
-            }
-        }
+           disimpan, bukan sekadar diantrekan. */
+        $pesanEmail = $this->request->getPost('kirim_undangan')
+            ? $this->sendInvitation((int) $interviewId)
+            : '';
 
         return redirect()->to(site_url('pelamar/' . $applicationId) . '#interview')
             ->with('success', 'Interview dijadwalkan.' . $pesanEmail);
@@ -146,6 +130,9 @@ class Interviews extends BaseController
             'nextRound'    => (int) $interview['round'],
             'interviewers' => model(UserModel::class)->interviewerOptions($interview['unit_id']),
             'chosen'       => model(InterviewParticipantModel::class)->idsFor($id),
+            /* Dari tombol "Atur waktu lain" pada permintaan jadwal ulang:
+               form terisi usulan pelamar dan undangan baru dicentang. */
+            'pakaiUsulan'  => $this->request->getGet('usulan') && $interview['reschedule_proposed_at'],
         ]);
     }
 
@@ -163,8 +150,7 @@ class Interviews extends BaseController
         $jam     = trim((string) $this->request->getPost('jam'));
         $scheduledAt = $tanggal && $jam ? $tanggal . ' ' . $jam . ':00' : $interview['scheduled_at'];
 
-        $interviews = model(InterviewModel::class);
-        $ok = $interviews->update($id, [
+        $data = [
             'round'        => (int) $this->request->getPost('round') ?: (int) $interview['round'],
             'title'        => $this->request->getPost('title') ?: null,
             'mode'         => $this->request->getPost('mode') ?: 'onsite',
@@ -172,8 +158,16 @@ class Interviews extends BaseController
             'duration_min' => (int) $this->request->getPost('duration_min') ?: 60,
             'location'     => $this->request->getPost('location') ?: null,
             'meeting_link' => $this->request->getPost('meeting_link') ?: null,
-        ]);
-        if (! $ok) {
+        ];
+
+        /* Waktu berubah: jawaban pelamar atas jadwal lama tak berlaku lagi dan
+           tombol di email lama dimatikan. */
+        if ($scheduledAt !== $interview['scheduled_at']) {
+            $data += InterviewModel::freshResponse();
+        }
+
+        $interviews = model(InterviewModel::class);
+        if (! $interviews->update($id, $data)) {
             return redirect()->back()->withInput()->with('errors', $interviews->errors());
         }
 
@@ -181,8 +175,52 @@ class Interviews extends BaseController
         $dipilih = array_intersect(array_map('intval', (array) $this->request->getPost('participants')), $sah);
         model(InterviewParticipantModel::class)->sync($id, $dipilih);
 
+        $pesanEmail = $this->request->getPost('kirim_undangan') ? $this->sendInvitation($id) : '';
+
         return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
-            ->with('success', 'Jadwal interview diperbarui.');
+            ->with('success', 'Jadwal interview diperbarui.' . $pesanEmail);
+    }
+
+    /** Setujui usulan pelamar apa adanya: jadwal dipindah dan undangan baru dikirim. */
+    public function approveReschedule(int $id)
+    {
+        $interview = $this->rescheduleRequest($id);
+        if (is_string($interview)) {
+            return redirect()->back()->with('error', $interview);
+        }
+
+        $usulan = $interview['reschedule_proposed_at'];
+        if (strtotime($usulan) <= time()) {
+            return redirect()->to(site_url('interview/' . $id . '/ubah?usulan=1'))
+                ->with('error', 'Waktu usulan pelamar sudah lewat. Tentukan waktu lain.');
+        }
+        model(InterviewModel::class)->update($id, ['scheduled_at' => $usulan] + InterviewModel::freshResponse());
+        $this->note($interview, 'Permintaan jadwal ulang disetujui. Jadwal dipindah ke '
+            . hari($usulan) . ', ' . tgl($usulan, true) . ' WITA.');
+
+        return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
+            ->with('success', 'Jadwal dipindah sesuai usulan pelamar.' . $this->sendInvitation($id));
+    }
+
+    /** Tolak usulan: jadwal tetap, pelamar diberi tahu dan diminta konfirmasi lagi. */
+    public function declineReschedule(int $id)
+    {
+        $interview = $this->rescheduleRequest($id);
+        if (is_string($interview)) {
+            return redirect()->back()->with('error', $interview);
+        }
+
+        $pesan = trim((string) $this->request->getPost('pesan'));
+        model(InterviewModel::class)->update($id, InterviewModel::freshResponse(false));
+        $this->note($interview, 'Permintaan jadwal ulang ditolak; jadwal tetap.' . ($pesan !== '' ? ' Pesan ke pelamar: ' . $pesan : ''));
+
+        $fresh = model(InterviewModel::class)->find($id);
+        $hasil = $this->queueAndSend('interview_reschedule_declined', $fresh, [
+            'pesan_hr' => $pesan !== '' ? '<p>' . nl2br(esc($pesan)) . '</p>' : '',
+        ]);
+
+        return redirect()->to(site_url('pelamar/' . $interview['application_id']) . '#interview')
+            ->with('success', 'Permintaan jadwal ulang ditolak, jadwal tetap.' . $hasil);
     }
 
     /** Ubah status jadwal (selesai / batal / tidak hadir). */
@@ -273,6 +311,71 @@ class Interviews extends BaseController
     {
         return $this->isRole('superadmin', 'hr_admin')
             || model(InterviewParticipantModel::class)->isAssigned($interviewId, (int) $this->auth['id']);
+    }
+
+    /** Kirim undangan (dengan tombol jawaban) untuk jadwal ini; kembalikan kalimat hasil untuk flash. */
+    private function sendInvitation(int $interviewId): string
+    {
+        $interview = model(InterviewModel::class)->find($interviewId);
+        $hasil     = $this->queueAndSend('interview_invitation', $interview);
+        model(InterviewModel::class)->update($interviewId, ['invited_at' => date('Y-m-d H:i:s')]);
+
+        return $hasil;
+    }
+
+    /**
+     * Susun email jadwal ke pelamar, catat di antrean, lalu kirim seketika.
+     * Tetap lewat antrean lebih dulu supaya ada jejak & bisa dikirim ulang.
+     */
+    private function queueAndSend(string $template, array $interview, array $extra = []): string
+    {
+        $interview = model(InterviewModel::class)->withNonce($interview);
+        $at        = $interview['scheduled_at'];
+        $queue     = new EmailQueue();
+        $outboxId = $queue->queueForApplication($template, (int) $interview['application_id'], $extra + [
+            'tanggal_interview' => tgl($at),
+            'jam_interview'     => date('H:i', strtotime($at)),
+            'lokasi'            => $interview['location'] ?: '-',
+            'link_meeting'      => $interview['meeting_link'] ?: '-',
+            'tombol_jawaban'    => InterviewLink::buttonsHtml($interview),
+        ], $this->auth['id']);
+
+        if ($outboxId === null) {
+            return ' Namun template email tidak aktif, jadi email tidak dibuat.';
+        }
+        if (! $queue->smtpReady()) {
+            return ' Email tersimpan di antrean, tapi SMTP belum diatur — belum terkirim.';
+        }
+
+        return $queue->sendNow($outboxId)
+            ? ' Email langsung dikirim ke pelamar.'
+            : ' Email gagal terkirim dan menunggu di antrean untuk dikirim ulang.';
+    }
+
+    /** Jadwal dengan permintaan jadwal ulang yang masih menunggu, atau pesan kesalahan. */
+    private function rescheduleRequest(int $id): array|string
+    {
+        $interview = model(InterviewModel::class)->detailed()->where('interviews.id', $id)->first();
+        if (! $interview || ! $this->reachable($interview)) {
+            return 'Jadwal tidak ditemukan.';
+        }
+        if (! $this->isRole('superadmin', 'hr_admin', 'hr_staff')) {
+            return 'Anda tidak berhak mengubah jadwal.';
+        }
+        if ($interview['status'] !== 'scheduled' || $interview['response_status'] !== 'reschedule_requested') {
+            return 'Tidak ada permintaan jadwal ulang yang menunggu untuk jadwal ini.';
+        }
+
+        return $interview;
+    }
+
+    private function note(array $interview, string $text): void
+    {
+        model(ApplicationNoteModel::class)->insert([
+            'application_id' => (int) $interview['application_id'],
+            'user_id'        => $this->auth['id'],
+            'note'           => 'Interview putaran ' . (int) $interview['round'] . ': ' . $text,
+        ]);
     }
 
     private function scopedApplication(int $id): ?array

@@ -43,11 +43,13 @@ class SendReminders extends BaseCommand
                 continue;
             }
 
+            $iv = model(InterviewModel::class)->withNonce($iv);
             $queue->queueForApplication('interview_reminder', (int) $iv['application_id'], [
                 'tanggal_interview' => tgl($iv['scheduled_at']),
                 'jam_interview'     => date('H:i', strtotime($iv['scheduled_at'])),
                 'lokasi'            => $iv['location'] ?: '-',
                 'link_meeting'      => $iv['meeting_link'] ?: '-',
+                'tombol_jawaban'    => \App\Libraries\InterviewLink::buttonsHtml($iv),
             ]);
             $antre++;
         }

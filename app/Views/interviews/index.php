@@ -36,6 +36,7 @@
                     <th>Lowongan</th>
                     <th>Mode</th>
                     <th>Status</th>
+                    <th>Jawaban Pelamar</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +57,13 @@
                             };
                             ?>
                             <span class="badge <?= $b ?>"><?= \App\Models\InterviewModel::STATUSES[$iv['status']] ?></span>
+                        </td>
+                        <td>
+                            <?php if (\App\Models\InterviewModel::showsResponse($iv)): ?>
+                                <span class="badge <?= \App\Models\InterviewModel::RESPONSE_BADGES[$iv['response_status']] ?>"><?= \App\Models\InterviewModel::RESPONSES[$iv['response_status']] ?></span>
+                            <?php else: ?>
+                                <small style="color:var(--ink-faint);">—</small>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

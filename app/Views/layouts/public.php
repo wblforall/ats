@@ -59,5 +59,6 @@
 </footer>
 
 <script src="<?= base_url('assets/js/app.js') ?>?v=<?= APP_ASSET_VERSION ?>"></script>
+<?= $this->renderSection('scripts') ?>
 </body>
 </html>

@@ -136,6 +136,12 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                             ?>
                             <span class="badge <?= $ivBadge ?>"><?= \App\Models\InterviewModel::STATUSES[$iv['status']] ?></span>
                             <span class="badge badge-gray"><?= \App\Models\InterviewModel::MODES[$iv['mode']] ?></span>
+                            <?php if (\App\Models\InterviewModel::showsResponse($iv)): ?>
+                                <span class="badge <?= \App\Models\InterviewModel::RESPONSE_BADGES[$iv['response_status']] ?>"
+                                      title="<?= $iv['responded_at'] ? 'Dijawab ' . tgl($iv['responded_at'], true) : 'Undangan terkirim ' . tgl($iv['invited_at'], true) ?>">
+                                    <?= \App\Models\InterviewModel::RESPONSES[$iv['response_status']] ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
                         <div style="font-size:13px; color:var(--ink); margin-top:8px;">
                             <?= icon('calendar') ?> <?= hari($iv['scheduled_at']) ?>, <?= tgl($iv['scheduled_at'], true) ?> WITA
@@ -150,6 +156,39 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                         <?php if ($peserta !== []): ?>
                             <div style="font-size:12.5px; color:var(--ink-soft); margin-top:8px;">
                                 Pewawancara: <?= esc(implode(', ', array_column($peserta, 'user_name'))) ?>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($iv['response_status'] === 'canceled_by_candidate'): ?>
+                            <div style="margin-top:10px; padding:12px; border-radius:10px; background:rgba(220,38,38,.07); font-size:13px;">
+                                <b>Pelamar membatalkan interview</b>
+                                <span style="color:var(--ink-faint); font-size:11.5px;">· <?= tgl($iv['responded_at'], true) ?></span>
+                                <div style="margin-top:4px; color:var(--ink-soft);">Alasan: <?= nl2br(esc($iv['response_reason'])) ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($iv['status'] === 'scheduled' && $iv['response_status'] === 'reschedule_requested'): ?>
+                            <div style="margin-top:10px; padding:12px; border-radius:10px; background:rgba(245,158,11,.10); font-size:13px;">
+                                <b>Pelamar minta jadwal ulang</b>
+                                <span style="color:var(--ink-faint); font-size:11.5px;">· <?= tgl($iv['responded_at'], true) ?></span>
+                                <div style="margin-top:6px;">Usulan: <b><?= hari($iv['reschedule_proposed_at']) ?>, <?= tgl($iv['reschedule_proposed_at'], true) ?> WITA</b></div>
+                                <div style="margin-top:2px; color:var(--ink-soft);">Alasan: <?= nl2br(esc($iv['response_reason'])) ?></div>
+                                <?php if ($bolehGeser): ?>
+                                    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:flex-start;">
+                                        <form method="post" action="<?= site_url('interview/' . $iv['id'] . '/jadwal-ulang/setujui') ?>">
+                                            <?= csrf_field() ?>
+                                            <button class="btn btn-primary btn-sm" data-confirm="Pindahkan jadwal ke usulan pelamar dan kirim undangan baru?"><?= icon('check') ?> Setujui & Kirim Undangan</button>
+                                        </form>
+                                        <a href="<?= site_url('interview/' . $iv['id'] . '/ubah?usulan=1') ?>" class="btn btn-ghost btn-sm"><?= icon('edit') ?> Atur Waktu Lain</a>
+                                        <details>
+                                            <summary class="btn btn-ghost btn-sm" style="list-style:none;"><?= icon('x') ?> Tolak</summary>
+                                            <form method="post" action="<?= site_url('interview/' . $iv['id'] . '/jadwal-ulang/tolak') ?>" style="margin-top:8px; min-width:260px;">
+                                                <?= csrf_field() ?>
+                                                <textarea name="pesan" class="form-control" style="min-height:70px; font-size:13px;" maxlength="500"
+                                                          placeholder="Pesan ke pelamar (opsional), mis. alasan jadwal tidak bisa dipindah"></textarea>
+                                                <button class="btn btn-ghost btn-sm" style="margin-top:6px;">Tolak & Beri Tahu Pelamar</button>
+                                            </form>
+                                        </details>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                         <div style="font-size:11.5px; color:var(--ink-faint); margin-top:8px; border-top:1px solid var(--line); padding-top:8px;">
@@ -198,7 +237,7 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                     <div style="border-top:1px solid var(--line); padding:11px 0;">
                         <div style="font-size:13.5px; white-space:pre-line;"><?= esc($n['note']) ?></div>
                         <div style="font-size:11.5px; color:var(--ink-faint); margin-top:4px;">
-                            <?= esc($n['user_name'] ?: 'HR') ?> · <?= tgl($n['created_at'], true) ?>
+                            <?= esc($n['user_name'] ?: 'Sistem') ?> · <?= tgl($n['created_at'], true) ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

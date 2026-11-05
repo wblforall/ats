@@ -5,8 +5,10 @@
 $isEdit  = ! empty($interview);
 $action  = $isEdit ? site_url('interview/' . $interview['id'] . '/ubah') : site_url('interview/baru/' . $app['id']);
 $chosen  = $chosen ?? [];
-$vTgl    = $isEdit ? date('Y-m-d', strtotime($interview['scheduled_at'])) : old('tanggal');
-$vJam    = $isEdit ? date('H:i', strtotime($interview['scheduled_at'])) : old('jam', '10:00');
+$usulan  = ! empty($pakaiUsulan);
+$waktu   = $isEdit ? ($usulan ? $interview['reschedule_proposed_at'] : $interview['scheduled_at']) : null;
+$vTgl    = $isEdit ? date('Y-m-d', strtotime($waktu)) : old('tanggal');
+$vJam    = $isEdit ? date('H:i', strtotime($waktu)) : old('jam', '10:00');
 ?>
 
 <div class="page-head">
@@ -19,6 +21,14 @@ $vJam    = $isEdit ? date('H:i', strtotime($interview['scheduled_at'])) : old('j
         <p class="page-sub"><?= esc($app['full_name']) ?> · <?= esc($app['job_title']) ?> (<?= esc($app['unit_name']) ?>)</p>
     </div>
 </div>
+
+<?php if ($isEdit && $interview['response_status'] === 'reschedule_requested'): ?>
+    <div class="alert alert-info" style="margin-bottom:18px;"><?= icon('clock') ?><span>
+        Pelamar minta jadwal ulang ke <b><?= hari($interview['reschedule_proposed_at']) ?>, <?= tgl($interview['reschedule_proposed_at'], true) ?> WITA</b>.
+        Alasan: <?= esc($interview['response_reason']) ?>
+        <?= $usulan ? '<br>Tanggal & jam di bawah sudah diisi usulan pelamar — ubah bila perlu.' : '' ?>
+    </span></div>
+<?php endif; ?>
 
 <form method="post" action="<?= $action ?>">
     <?= csrf_field() ?>
@@ -86,18 +96,18 @@ $vJam    = $isEdit ? date('H:i', strtotime($interview['scheduled_at'])) : old('j
                 <?php endif; ?>
             </div>
 
-            <?php if (! $isEdit): ?>
             <div class="card" style="margin-top:18px;">
                 <label style="display:flex; gap:9px; align-items:flex-start; font-size:13px;">
-                    <input type="checkbox" name="kirim_undangan" value="1" style="margin-top:3px;" checked>
-                    <span>Kirim email undangan ke pelamar begitu jadwal disimpan.</span>
+                    <input type="checkbox" name="kirim_undangan" value="1" style="margin-top:3px;" <?= ! $isEdit || $usulan ? 'checked' : '' ?>>
+                    <span><?= $isEdit
+                        ? 'Kirim undangan baru ke pelamar. Bila tanggal/jam berubah, tombol di email lama otomatis tidak berlaku dan pelamar diminta konfirmasi lagi.'
+                        : 'Kirim email undangan ke pelamar begitu jadwal disimpan.' ?></span>
                 </label>
                 <p style="font-size:11.5px; color:var(--ink-faint); margin:8px 0 0;">
                     Undangan tercatat di riwayat email pelamar. Bila server email belum diatur,
                     undangan menunggu di antrean untuk dikirim ulang.
                 </p>
             </div>
-            <?php endif; ?>
 
             <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:18px;">
                 <?= icon('check') ?> <?= $isEdit ? 'Simpan Perubahan' : 'Simpan Jadwal' ?>

@@ -18,6 +18,12 @@ $routes->post('karir/(:segment)/lamar', 'Career::submit/$1');
 $routes->get('lacak', 'Track::form');
 $routes->post('lacak', 'Track::check');
 
+// Jawaban pelamar atas undangan interview (tautan bertanda tangan dari email).
+$routes->get('jadwal-interview/(:num)/(:alphanum)', 'InterviewReply::show/$1/$2');
+$routes->post('jadwal-interview/(:num)/(:alphanum)/hadir', 'InterviewReply::confirm/$1/$2');
+$routes->post('jadwal-interview/(:num)/(:alphanum)/ulang', 'InterviewReply::reschedule/$1/$2');
+$routes->post('jadwal-interview/(:num)/(:alphanum)/batal', 'InterviewReply::cancel/$1/$2');
+
 /* ---------------------------------------------------------------------------
  | Autentikasi
  |---------------------------------------------------------------------------*/
@@ -75,6 +81,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
     $routes->get('interview/(:num)/ubah', 'Interviews::edit/$1');
     $routes->post('interview/(:num)/ubah', 'Interviews::updateInterview/$1');
     $routes->post('interview/(:num)/status', 'Interviews::setStatus/$1');
+    $routes->post('interview/(:num)/jadwal-ulang/setujui', 'Interviews::approveReschedule/$1');
+    $routes->post('interview/(:num)/jadwal-ulang/tolak', 'Interviews::declineReschedule/$1');
 
     }); // akhir grup HR penuh
 
