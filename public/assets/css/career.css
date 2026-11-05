@@ -79,6 +79,11 @@ body.public :focus-visible, body.auth :focus-visible { outline: 2px solid var(--
 .pub-hero a { color: #F6DFA8 !important; opacity: 1 !important; font-weight: 600; }
 
 .pub-main { margin-top: -48px; position: relative; }
+/* Pesan di atas isi bisa jatuh di atas hero navy: beri latar padat agar terbaca. */
+.pub-main > .alert { box-shadow: var(--shadow); }
+.pub-main > .alert-success { background: #E9F7EE; }
+.pub-main > .alert-error   { background: #FCECEC; }
+.pub-main > .alert-info    { background: #EAF0FA; }
 .pub-panel { border-radius: 20px; box-shadow: var(--shadow); }
 
 /* --- Beranda karir -------------------------------------------------------- */

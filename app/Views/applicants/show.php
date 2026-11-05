@@ -112,7 +112,7 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
 
         <!-- Interview -->
         <div class="card" style="margin-top:18px;" id="interview">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
                 <div class="section-title" style="margin:0;">Jadwal Interview</div>
                 <div class="spacer" style="flex:1;"></div>
                 <?php if ($bolehGeser): ?>
@@ -151,7 +151,7 @@ $umur = $app['birth_date'] ? (int) ((time() - strtotime($app['birth_date'])) / 3
                             <div style="font-size:13px; color:var(--ink-soft); margin-top:4px;">Lokasi: <?= esc($iv['location']) ?></div>
                         <?php endif; ?>
                         <?php if ($iv['meeting_link']): ?>
-                            <div style="font-size:13px; color:var(--ink-soft); margin-top:4px;">Tautan: <?= esc($iv['meeting_link']) ?></div>
+                            <div style="font-size:13px; color:var(--ink-soft); margin-top:4px; overflow-wrap:anywhere;">Tautan: <?= esc($iv['meeting_link']) ?></div>
                         <?php endif; ?>
                         <?php if ($peserta !== []): ?>
                             <div style="font-size:12.5px; color:var(--ink-soft); margin-top:8px;">
