@@ -141,6 +141,7 @@ class EmailQueue
         try {
             if ($mailer->send(false)) {
                 $outbox->markSent((int) $row['id']);
+                (new SentFolder())->save($mailer->archive['headerStr'] . $mailer->archive['finalBody']);
 
                 return true;
             }

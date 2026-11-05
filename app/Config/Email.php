@@ -123,4 +123,14 @@ class Email extends BaseConfig
      * Enable notify message from server
      */
     public bool $DSN = false;
+
+    /**
+     * Salinan email terkirim ke folder Sent kotak surat pengirim (IMAP APPEND),
+     * memakai SMTPUser/SMTPPass. Kosongkan IMAPHost untuk mematikan.
+     */
+    public string $IMAPHost = '';
+
+    public int $IMAPPort = 993;
+
+    public string $IMAPSentFolder = 'INBOX.Sent';
 }
