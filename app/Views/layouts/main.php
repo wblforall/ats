@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= esc($title ?? 'Dashboard') ?> · WBL ATS</title>
     <link rel="icon" href="<?= base_url('favicon.ico') ?>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&family=Plus+Jakarta+Sans:wght@400..800&display=swap">
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>?v=<?= APP_ASSET_VERSION ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/internal.css') ?>?v=<?= APP_ASSET_VERSION ?>">
     <?= $this->renderSection('head') ?>
 </head>
 <body>
+<div class="app-backdrop" aria-hidden="true"><?= view('partials/canopy', ['variant' => 'hero']) ?></div>
 <div class="app">
     <div class="app-shell">
         <?= $this->include('partials/topbar') ?>
