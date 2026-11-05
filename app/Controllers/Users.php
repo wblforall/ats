@@ -98,6 +98,13 @@ class Users extends BaseController
             $data['password'] = $password; // di-hash otomatis oleh model
         }
 
+        /* Aturan is_unique[users.email,id,{id}] butuh id di data supaya email
+           milik akun ini sendiri tidak dianggap bentrok. Validasi berjalan
+           sebelum kolom disaring, jadi id tidak ikut tersimpan. */
+        if ($id) {
+            $data['id'] = $id;
+        }
+
         $saved = $id ? $users->update($id, $data) : $users->insert($data);
         if (! $saved) {
             return redirect()->back()->withInput()->with('errors', $users->errors());

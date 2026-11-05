@@ -21,6 +21,8 @@ class UserModel extends Model
     protected $useTimestamps = true;
 
     protected $validationRules = [
+        // Wajib ada agar placeholder {id} di aturan email terisi saat ubah data.
+        'id'    => 'permit_empty|is_natural_no_zero',
         'name'  => 'required|max_length[120]',
         'email' => 'required|valid_email|max_length[160]|is_unique[users.email,id,{id}]',
         'role'  => 'required|in_list[superadmin,hr_admin,hr_staff,interviewer]',
